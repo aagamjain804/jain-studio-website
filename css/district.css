@@ -403,7 +403,7 @@ body.is-hovering .district__bg{
 
 @media(max-width:768px){
 
-  .hint{
+  .mobile-hint{
     position:fixed;
 
     top:90%;
