@@ -213,3 +213,21 @@ body{
 
   .ji-hero h1{ font-size:36px; }
 }
+
+/* Fix Trust Section on Mobile */
+
+@media(max-width:600px){
+
+  .trust-grid{
+    grid-template-columns:1fr; /* One per row */
+    max-width:100%;
+  }
+
+  .trust-grid div{
+    width:100%;
+    margin:0 auto;
+  }
+
+}
+
+
