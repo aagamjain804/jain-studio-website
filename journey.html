@@ -112,9 +112,18 @@ video{
 <!-- Skip -->
 <button id="skipBtn">Skip Journey</button>
 
+<div id="soundHint">
+  Tap anywhere for sound
+</div>
 
 <!-- Video -->
-<video id="journeyVideo" playsinline preload="auto" autoplay>
+<video
+  id="journeyVideo"
+  playsinline
+  preload="auto"
+  muted
+  autoplay
+>
 
   <!-- Mobile -->
   <source
@@ -164,7 +173,18 @@ document.addEventListener("click", ()=>{
   video.muted = false;
   video.volume = 1;
 
+  // Hide sound hint after first tap
+  const hint = document.getElementById("soundHint");
+  if (hint) {
+    hint.style.opacity = "0";
+
+    setTimeout(()=>{
+      hint.style.display = "none";
+    },400);
+  }
+
 });
+
 
 
 /* End */
