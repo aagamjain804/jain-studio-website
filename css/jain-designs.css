@@ -436,3 +436,46 @@ body{
   }
 
 }
+
+/* ============================= */
+/* HEADER ACTION BUTTONS */
+/* ============================= */
+
+.jd-actions{
+  display:flex;
+  gap:14px;
+  align-items:center;
+}
+
+.jd-btn{
+  padding:9px 18px;
+  border-radius:999px;
+
+  border:1px solid rgba(120,255,255,.45);
+  background:rgba(255,255,255,.04);
+  backdrop-filter:blur(10px);
+
+  color:#fff;
+  text-decoration:none;
+  font-size:13px;
+
+  transition:.3s ease;
+}
+
+.jd-btn:hover{
+  box-shadow:0 0 22px rgba(120,255,255,.35);
+  transform:translateY(-2px);
+}
+
+@media (max-width:768px){
+
+  .jd-actions{
+    flex-direction:column;
+    gap:8px;
+  }
+
+  .jd-btn{
+    font-size:12px;
+    padding:8px 16px;
+  }
+}

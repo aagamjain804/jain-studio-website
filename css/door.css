@@ -188,46 +188,58 @@ video{
   .enter-btn{ padding:13px 18px; }
 }
 
-/* Direct Website Button */
+/* Top Right Buttons Wrapper */
 
-.skip-site-btn{
-  position:fixed;
+.top-actions{
+  position:absolute;
   top:24px;
   right:28px;
 
-  padding:10px 22px;
-  border-radius:999px;
+  display:flex;
+  gap:12px;
 
-  font-size:13px;
-  letter-spacing:.08em;
-
-  text-decoration:none;
-  color:#fff;
-
-  border:1px solid rgba(120,255,255,.6);
-
-  background:rgba(8,12,18,.6);
-  backdrop-filter:blur(12px);
-
-  transition:.35s ease;
-
-  z-index:999;
+  z-index:10;
 }
 
-.skip-site-btn:hover{
-  box-shadow:0 0 28px rgba(120,255,255,.45);
+.skip-btn{
+  min-width:170px;          /* same width */
+  text-align:center;
+
+  padding:10px 20px;
+
+  border-radius:999px;
+
+  border:1px solid rgba(120,255,255,.45);
+
+  background:rgba(255,255,255,.04);
+  backdrop-filter:blur(10px);
+
+  color:#fff;
+  text-decoration:none;
+  font-size:14px;
+  font-weight:500;
+
+  transition:.3s ease;
+}
+
+/* Hover Effect (same for both) */
+.skip-btn:hover{
+  box-shadow:0 0 22px rgba(120,255,255,.35);
   transform:translateY(-2px);
 }
 
-@media(max-width:600px){
+@media (max-width:768px){
 
-  .skip-site-btn{
-    top:18px;
+  .top-actions{
+    top:24px;          /* pushes below logo */
     right:16px;
+    flex-direction: column;
+  }
 
-    padding:8px 16px;
+  .skip-btn{
+    min-width:150px;
     font-size:12px;
+    padding:8px 16px;
   }
 
 }
-
