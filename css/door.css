@@ -231,15 +231,15 @@ video{
 @media (max-width:768px){
 
   .top-actions{
-    top:24px;          /* pushes below logo */
-    right:16px;
-    flex-direction: column;
+    top:20px;          /* pushes below logo */
+    right:14px;
+    flex-direction: row;
   }
 
   .skip-btn{
-    min-width:150px;
-    font-size:12px;
-    padding:8px 16px;
+    min-width:auto;
+    font-size:8px;
+    padding:7px 10px;
   }
 
 }

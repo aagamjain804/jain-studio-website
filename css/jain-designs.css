@@ -470,12 +470,13 @@ body{
 @media (max-width:768px){
 
   .jd-actions{
-    flex-direction:column;
+    flex-direction:row;
     gap:8px;
   }
 
   .jd-btn{
-    font-size:12px;
-    padding:8px 16px;
+    min-width: auto;
+    font-size:8px;
+    padding:7px 10px;
   }
 }
