@@ -32,14 +32,24 @@
     </a>
 
     <div class="top-actions">
-      <a href="home.html" class="skip-btn">
-        Skip to Portfolio →
-      </a>
+  <a href="home.html" class="skip-btn">Skip to Portfolio →</a>
+  <a href="graphics/jain-designs.html" class="skip-btn">Skip to Business →</a>
+</div>
 
-      <a href="graphics/jain-designs.html" class="skip-btn">
-        Skip to Business →
-      </a>
-    </div>
+<!-- MOBILE ONLY -->
+<div class="mobile-menu">
+  <div class="burger" onclick="toggleMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <div class="mobile-dropdown" id="mobileDropdown">
+    <a href="home.html">Skip to Portfolio →</a>
+    <a href="graphics/jain-designs.html">Skip to Business →</a>
+  </div>
+</div>
+  
 
     <div class="cta">
       <button id="enterBtn" class="enter-btn" type="button" aria-label="Enter Studio">
@@ -61,6 +71,13 @@
 <audio id="swooshSound" preload="auto">
   <source src="/assets/audio/swoosh.mp3" type="audio/mp3">
 </audio>
+
+<script>
+function toggleMenu(){
+  const menu = document.getElementById("mobileDropdown");
+  menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+}
+</script>
 
 </body>
 </html>

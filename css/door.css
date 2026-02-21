@@ -228,18 +228,60 @@ video{
   transform:translateY(-2px);
 }
 
+/* Hide mobile menu by default (desktop safe) */
+.mobile-menu{
+  display:none;
+}
+
 @media (max-width:768px){
 
+  /* Hide desktop buttons ONLY on phone */
   .top-actions{
-    top:20px;          /* pushes below logo */
-    right:14px;
-    flex-direction: row;
+    display:none;
   }
 
-  .skip-btn{
-    min-width:auto;
-    font-size:8px;
-    padding:7px 10px;
+  /* Show burger only on phone */
+  .mobile-menu{
+    display:block;
+    position:absolute;
+    top:20px;
+    right:20px;
+    z-index:30;
   }
 
+  .burger{
+    width:26px;
+    cursor:pointer;
+  }
+
+  .burger span{
+    display:block;
+    height:2px;
+    margin:6px 0;
+    background:rgba(120,255,255,.8);
+  }
+
+  .mobile-dropdown{
+    display:none;
+    flex-direction:column;
+    gap:10px;
+    
+    margin-top:12px;
+    padding:14px;
+
+    border-radius:16px;
+    backdrop-filter:blur(12px);
+    background:rgba(10,15,20,.9);
+    border:1px solid rgba(120,255,255,.35);
+  }
+
+  .mobile-dropdown a{
+    text-decoration:none;
+    color:#fff;
+    font-size:13px;
+    padding:8px 12px;
+    border-radius:999px;
+    border:1px solid rgba(120,255,255,.4);
+    text-align:center;
+  }
 }
