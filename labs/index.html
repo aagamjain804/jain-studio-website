@@ -981,7 +981,7 @@
     <li><a href="#how">How it works</a></li>
     <li><a href="#pricing">Pricing</a></li>
     <li><a href="https://www.jainstudio.in" target="_blank">← Jain Studio</a></li>
-    <li><a href="#final-cta" class="nav-cta">Start a project</a></li>
+    <li><a href="/labs/start.html" class="nav-cta">Start a project</a></li>
   </ul>
 
   <button class="nav-toggle" id="nav-toggle" aria-label="Menu">☰</button>
@@ -1032,7 +1032,7 @@
         <div id="demo-text"></div>
         <div class="demo-feats" id="demo-feats"></div>
         <div class="demo-actions">
-          <a href="#final-cta" class="demo-act-primary">Let's build this</a>
+          <a href="/labs/start.html" class="demo-act-primary">Let's build this</a>
           <button class="demo-act-secondary" onclick="resetDemo()">Try another</button>
         </div>
       </div>
@@ -1211,7 +1211,7 @@
           </div>
           <p class="iceberg-title">This is just the tip of the iceberg.</p>
           <p class="iceberg-sub">Whatever you're picturing right now, we've probably already thought past it. Tell us your problem and let's find out.</p>
-          <a href="#final-cta" class="iceberg-cta">Tell us your problem →</a>
+          <a href="/labs/start.html" class="iceberg-cta">Tell us your problem →</a>
         </div>
 
       </div>
@@ -1396,7 +1396,7 @@
           These are base prices — your final quote is built around exactly what <em>you</em> need, nothing more. No package forces you to pay for things you won't use.
         </p>
         <div style="display:flex;justify-content:center;margin-bottom:1.5rem">
-          <a href="services.html#calculator" style="font-size:13px;color:var(--accent);text-decoration:none;border:1px solid var(--accent-border);padding:6px 18px;border-radius:99px;font-family:'Space Grotesk',sans-serif;font-weight:500;transition:background .2s" onmouseover="this.style.background='var(--accent-dim)'" onmouseout="this.style.background='transparent'">
+          <a href="/labs/services.html#calculator" style="font-size:13px;color:var(--accent);text-decoration:none;border:1px solid var(--accent-border);padding:6px 18px;border-radius:99px;font-family:'Space Grotesk',sans-serif;font-weight:500;transition:background .2s" onmouseover="this.style.background='var(--accent-dim)'" onmouseout="this.style.background='transparent'">
             Build your exact quote →
           </a>
         </div>
@@ -1420,7 +1420,7 @@
             <li>Mobile-friendly</li>
             <li>7-day bug support</li>
           </ul>
-          <a href="#final-cta" class="price-cta">Get started</a>
+          <a href="/labs/start.html" class="price-cta">Get started</a>
         </div>
 
         <div class="price-card">
@@ -1434,7 +1434,7 @@
             <li>Mobile-friendly</li>
             <li>7-day bug support</li>
           </ul>
-          <a href="#final-cta" class="price-cta">Get started</a>
+          <a href="/labs/start.html" class="price-cta">Get started</a>
         </div>
 
         <div class="price-card featured">
@@ -1450,7 +1450,7 @@
             <li>Mobile-friendly</li>
             <li>14-day support</li>
           </ul>
-          <a href="#final-cta" class="price-cta">Get started</a>
+          <a href="/labs/start.html" class="price-cta">Get started</a>
         </div>
 
         <div class="price-card">
@@ -1465,7 +1465,7 @@
             <li>Custom branding</li>
             <li>30-day support</li>
           </ul>
-          <a href="#final-cta" class="price-cta">Get started</a>
+          <a href="/labs/start.html" class="price-cta">Get started</a>
         </div>
 
         <div class="price-card">
@@ -1480,7 +1480,7 @@
             <li>Dedicated support</li>
             <li>Scale strategy</li>
           </ul>
-          <a href="#final-cta" class="price-cta">Talk to us</a>
+          <a href="/labs/start.html" class="price-cta">Talk to us</a>
         </div>
 
       </div>
@@ -1506,7 +1506,7 @@
       <a href="mailto:hello@jainstudio.in" class="btn-ghost">Send an email</a>
     </div>
     <p class="final-note reveal">
-      Prefer a call? &nbsp;<a href="#">Book a free 15-min slot →</a>
+      Prefer a call? &nbsp;<a href="https://wa.me/919909664569?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%2015-minute%20call%20with%20Jain%20Labs" target="_blank">Book a free 15-min slot →</a>
     </p>
   </section>
 
@@ -1756,6 +1756,7 @@ function runDemo() {
     const key  = detect(val);
     const data = solutions[key];
     document.getElementById('demo-text').textContent = data.text;
+    document.querySelector('.demo-act-primary').href = '/labs/start.html?problem=' + encodeURIComponent(val);
     document.getElementById('demo-feats').innerHTML =
       data.feats.map(f => `<span class="demo-feat">${f}</span>`).join('');
     const wrap = document.getElementById('demo-wrap');
