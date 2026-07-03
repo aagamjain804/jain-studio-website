@@ -1,0 +1,1936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Jain Labs — You name the problem. We build the solution. AI-powered custom websites for every challenge in your life.">
+  <title>Jain Labs — You name the problem. We build the solution.</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #060606;
+      --bg-2:         #0d0d0d;
+      --bg-3:         #161616;
+      --border:       rgba(255,255,255,0.07);
+      --border-hi:    rgba(255,255,255,0.15);
+      --text:         #f0ede8;
+      --muted:        #888;
+      --muted-2:      #444;
+      --accent:       #f0a500;
+      --accent-hi:    #ffc13d;
+      --accent-dim:   rgba(240,165,0,0.12);
+      --accent-border:rgba(240,165,0,0.22);
+      --r-sm:   8px;
+      --r:      12px;
+      --r-lg:   20px;
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+    }
+
+    ::selection { background: rgba(240,165,0,0.22); color: var(--text); }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: 4px; }
+
+    /* ===== THREE.JS CANVAS ===== */
+    #bg-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    nav, main, footer { position: relative; z-index: 1; }
+
+    /* ===== NAVIGATION ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.35s, border-bottom 0.35s;
+    }
+
+    nav.scrolled {
+      background: rgba(6,6,6,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo-mark {
+      width: 34px; height: 34px;
+      background: var(--accent);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700; font-size: 13px; color: #000;
+      letter-spacing: -0.04em;
+      flex-shrink: 0;
+    }
+
+    .nav-logo-info { display: flex; flex-direction: column; gap: 1px; }
+
+    .nav-logo-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px; font-weight: 600;
+      color: var(--text); letter-spacing: -0.03em;
+    }
+
+    .nav-logo-sub {
+      font-size: 10px; color: var(--muted-2);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .nav-links {
+      display: flex; align-items: center;
+      gap: 2rem; list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 14px; transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-links .nav-cta {
+      background: var(--accent);
+      color: #000 !important;
+      padding: 8px 20px;
+      border-radius: 99px;
+      font-weight: 600;
+      font-family: 'Space Grotesk', sans-serif;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .nav-links .nav-cta:hover {
+      background: var(--accent-hi);
+      transform: scale(1.03);
+    }
+
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 38px; height: 38px;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      font-size: 18px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ===== SCROLL REVEAL ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.32s; }
+    .reveal-delay-4 { transition-delay: 0.44s; }
+
+    /* ===== COMMON SECTION ATOMS ===== */
+    section { padding: 6rem 2rem; scroll-margin-top: 72px; }
+
+    .max-w { max-width: 1100px; margin: 0 auto; }
+
+    .sec-label {
+      font-size: 11px; color: var(--accent);
+      font-weight: 600; letter-spacing: .12em;
+      text-transform: uppercase;
+      font-family: 'Space Grotesk', sans-serif;
+      margin-bottom: .6rem;
+    }
+
+    .sec-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700; color: var(--text);
+      margin-bottom: .875rem;
+    }
+
+    .sec-sub {
+      font-size: 1.05rem; color: var(--muted);
+      font-weight: 300; line-height: 1.75;
+      max-width: 460px;
+    }
+
+    /* ===== HERO ===== */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 7rem 1.5rem 5rem;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      padding: 5px 15px; border-radius: 99px;
+      font-size: 12px; font-weight: 500;
+      font-family: 'Space Grotesk', sans-serif;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+
+    .badge-dot {
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulseDot 2.2s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.35; transform: scale(0.7); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-title {
+      font-size: clamp(3rem, 9vw, 7.5rem);
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.04em;
+      line-height: 1.02;
+      margin-bottom: 1.5rem;
+      max-width: 950px;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.35s forwards;
+    }
+
+    .hero-title .accent { color: var(--accent); }
+
+    .hero-title .line-muted {
+      color: rgba(240,237,232,0.35);
+    }
+
+    .hero-sub {
+      font-size: clamp(.95rem, 2vw, 1.2rem);
+      color: var(--muted);
+      max-width: 460px;
+      margin-bottom: 2.75rem;
+      font-weight: 300; line-height: 1.75;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.5s forwards;
+    }
+
+    /* Input row */
+    .hero-input-row {
+      display: flex; align-items: center;
+      background: var(--bg-2);
+      border: 1px solid var(--border-hi);
+      border-radius: 99px;
+      padding: 6px 6px 6px 22px;
+      gap: 8px;
+      width: 100%; max-width: 540px;
+      margin-bottom: .875rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.62s forwards;
+    }
+
+    .hero-input-row:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+
+    #hero-input {
+      flex: 1; min-width: 0;
+      background: transparent; border: none; outline: none;
+      color: var(--text);
+      font-size: 14px; font-family: 'Inter', sans-serif;
+    }
+
+    #hero-input::placeholder { color: var(--muted-2); }
+
+    .hero-btn {
+      background: var(--accent);
+      color: #000; border: none;
+      border-radius: 99px;
+      padding: 10px 22px;
+      font-size: 14px; font-weight: 600;
+      font-family: 'Space Grotesk', sans-serif;
+      cursor: pointer; white-space: nowrap;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .hero-btn:hover { background: var(--accent-hi); transform: scale(1.03); }
+
+    /* Suggestion chips */
+    .hero-chips {
+      display: flex; flex-wrap: wrap;
+      gap: 7px; justify-content: center;
+      max-width: 540px;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.74s forwards;
+    }
+
+    .chip {
+      font-size: 12px; color: var(--muted);
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      padding: 4px 13px; border-radius: 99px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .chip:hover { color: var(--accent); border-color: var(--accent-border); }
+
+    /* Demo response card */
+    #demo-wrap {
+      width: 100%; max-width: 540px;
+      margin-top: 1.25rem;
+      display: none;
+    }
+
+    .demo-card {
+      background: var(--bg-2);
+      border: 1px solid var(--accent-border);
+      border-radius: var(--r);
+      padding: 1.25rem 1.5rem;
+      text-align: left;
+      animation: fadeUp 0.5s forwards;
+    }
+
+    .demo-header {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: .75rem;
+    }
+
+    .demo-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+
+    .demo-label {
+      font-size: 11px; color: var(--accent);
+      font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    #demo-text { font-size: 14px; color: var(--text); line-height: 1.7; }
+
+    .demo-feats {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-top: .875rem;
+    }
+
+    .demo-feat {
+      font-size: 12px; font-weight: 500;
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--accent-dim);
+      color: var(--accent);
+      border-radius: 99px; padding: 3px 11px;
+    }
+
+    .demo-actions {
+      display: flex; gap: 8px; margin-top: 1rem;
+    }
+
+    .demo-act-primary {
+      background: var(--accent); color: #000;
+      border: none; border-radius: 99px;
+      padding: 8px 18px; font-size: 13px;
+      font-weight: 600;
+      font-family: 'Space Grotesk', sans-serif;
+      cursor: pointer; text-decoration: none;
+      display: inline-block;
+      transition: background 0.2s;
+    }
+
+    .demo-act-primary:hover { background: var(--accent-hi); }
+
+    .demo-act-secondary {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border-hi);
+      border-radius: 99px; padding: 8px 18px;
+      font-size: 13px; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: color 0.2s;
+    }
+
+    .demo-act-secondary:hover { color: var(--text); }
+
+    /* Hero stats */
+    .hero-stats {
+      display: flex; gap: 3rem;
+      margin-top: 3.5rem;
+      padding-top: 3rem;
+      border-top: 1px solid var(--border);
+      opacity: 0;
+      animation: fadeUp 0.9s 0.85s forwards;
+    }
+
+    .stat-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem; font-weight: 700;
+      color: var(--text);
+    }
+
+    .stat-label { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+    /* ===== AUDIENCE ===== */
+    #audience { background: var(--bg); padding-top: 5rem; }
+
+    .aud-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 14px;
+    }
+
+    .aud-card { height: 230px; perspective: 1100px; cursor: pointer; }
+
+    .aud-inner {
+      position: relative; width: 100%; height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.65s cubic-bezier(0.23,1,0.32,1);
+    }
+
+    .aud-card:hover .aud-inner,
+    .aud-card.flipped .aud-inner { transform: rotateY(180deg); }
+
+    .aud-face {
+      position: absolute; inset: 0;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 1.5rem;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .aud-back-face {
+      transform: rotateY(180deg);
+      background: var(--bg-3);
+      border-color: var(--accent-border);
+    }
+
+    .aud-icon {
+      width: 46px; height: 46px;
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 23px;
+      margin-bottom: 1rem;
+    }
+
+    .aud-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px; font-weight: 600;
+      color: var(--text); margin-bottom: 5px;
+    }
+
+    .aud-desc { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+
+    .aud-price {
+      margin-top: .75rem;
+      font-size: 13px; color: var(--accent);
+      font-weight: 500;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .aud-back-label {
+      font-size: 10px; color: var(--accent);
+      text-transform: uppercase; letter-spacing: .1em;
+      font-weight: 600; font-family: 'Space Grotesk', sans-serif;
+      margin-bottom: .625rem;
+    }
+
+    .aud-feats { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+
+    .aud-feats li {
+      font-size: 12px; color: var(--muted);
+      display: flex; align-items: flex-start; gap: 7px; line-height: 1.4;
+    }
+
+    .aud-feats li::before { content: '→'; color: var(--accent); flex-shrink: 0; font-size: 11px; margin-top: 1px; }
+
+    /* ===== HOW IT WORKS ===== */
+    #how { background: var(--bg-2); }
+
+    .how-steps {
+      display: grid;
+      grid-template-columns: 1fr 32px 1fr 32px 1fr;
+      gap: 0; align-items: start;
+      max-width: 860px; margin: 0 auto;
+    }
+
+    .how-step { text-align: center; padding: 0 1rem; }
+
+    .how-num {
+      width: 56px; height: 56px;
+      border: 1.5px solid var(--accent);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px; font-weight: 700;
+      color: var(--accent);
+      margin: 0 auto 1.25rem;
+      position: relative;
+    }
+
+    .how-num::after {
+      content: '';
+      position: absolute; inset: -6px;
+      border-radius: 50%;
+      border: 1px solid var(--accent-dim);
+    }
+
+    .how-step-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 17px; font-weight: 600;
+      color: var(--text); margin-bottom: .5rem;
+    }
+
+    .how-step-desc { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+    .how-arrow {
+      padding-top: 18px; color: var(--accent);
+      font-size: 18px; opacity: 0.3;
+      text-align: center;
+    }
+
+    /* ===== PRICING ===== */
+    #pricing { background: var(--bg); }
+
+    .toggle-wrap {
+      display: flex; align-items: center;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 99px; padding: 4px;
+      width: fit-content; margin: 0 auto 3rem;
+    }
+
+    .tog-btn {
+      background: transparent; border: none;
+      color: var(--muted); font-size: 14px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 500; padding: 8px 22px;
+      border-radius: 99px; cursor: pointer;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    .tog-btn.on { background: var(--accent); color: #000; }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+      gap: 12px; max-width: 1000px; margin: 0 auto;
+    }
+
+    .price-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 1.5rem 1.25rem;
+      transition: border-color 0.2s, transform 0.25s;
+      position: relative; overflow: hidden;
+    }
+
+    .price-card:hover {
+      border-color: var(--border-hi);
+      transform: translateY(-5px);
+    }
+
+    .price-card.featured { border-color: var(--accent-border); }
+    .price-card.featured::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top left, rgba(240,165,0,0.06) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .price-badge-tag {
+      position: absolute; top: -1px; right: 14px;
+      background: var(--accent); color: #000;
+      font-size: 10px; font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      padding: 4px 10px; border-radius: 0 0 8px 8px;
+      letter-spacing: .06em; text-transform: uppercase;
+    }
+
+    .price-tier-label {
+      font-size: 10px; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .1em;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 600;
+      margin-bottom: .4rem;
+    }
+
+    .price-who {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px; font-weight: 600;
+      color: var(--text); margin-bottom: 1rem;
+    }
+
+    .price-amount {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem; font-weight: 700;
+      color: var(--text); letter-spacing: -0.03em;
+      transition: opacity 0.25s;
+    }
+
+    .price-note { font-size: 12px; color: var(--muted); margin-bottom: 1.25rem; }
+
+    .price-feats { list-style: none; display: flex; flex-direction: column; gap: 7px; margin-bottom: 1.25rem; }
+
+    .price-feats li {
+      font-size: 12px; color: var(--muted);
+      display: flex; align-items: flex-start; gap: 6px; line-height: 1.4;
+    }
+
+    .price-feats li::before { content: '✓'; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+
+    .price-cta {
+      display: block; width: 100%; text-align: center;
+      background: transparent;
+      border: 1px solid var(--border-hi);
+      color: var(--text); padding: 9px;
+      border-radius: var(--r-sm);
+      font-size: 13px; font-family: 'Space Grotesk', sans-serif;
+      font-weight: 500; cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+
+    .price-cta:hover { border-color: var(--accent); color: var(--accent); }
+    .price-card.featured .price-cta { background: var(--accent); border-color: var(--accent); color: #000; }
+    .price-card.featured .price-cta:hover { background: var(--accent-hi); }
+
+    /* ===== FINAL CTA ===== */
+    #final-cta {
+      background: var(--bg-2);
+      text-align: center; padding: 8rem 2rem;
+    }
+
+    .final-title {
+      font-size: clamp(2.75rem, 7vw, 5.5rem);
+      font-weight: 700; color: var(--text);
+      letter-spacing: -0.04em;
+      margin-bottom: 1rem; line-height: 1.03;
+    }
+
+    .final-title .accent { color: var(--accent); }
+
+    .final-sub {
+      font-size: 1.1rem; color: var(--muted);
+      font-weight: 300; margin-bottom: 2.5rem;
+    }
+
+    .final-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    .btn-primary {
+      background: var(--accent); color: #000;
+      border: none; padding: 14px 34px;
+      border-radius: 99px; font-size: 15px;
+      font-weight: 600; font-family: 'Space Grotesk', sans-serif;
+      cursor: pointer; text-decoration: none;
+      display: inline-block;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .btn-primary:hover { background: var(--accent-hi); transform: scale(1.03); }
+
+    .btn-ghost {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border-hi);
+      padding: 14px 34px; border-radius: 99px;
+      font-size: 15px; font-family: 'Inter', sans-serif;
+      cursor: pointer; text-decoration: none;
+      display: inline-block;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    .final-note {
+      font-size: 12px; color: var(--muted-2);
+      margin-top: 1.75rem; line-height: 1.7;
+    }
+
+    .final-note a { color: var(--muted); text-decoration: underline; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 2rem;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap; gap: 1.5rem;
+    }
+
+    .foot-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px; font-weight: 600;
+      color: var(--text); text-decoration: none;
+    }
+
+    .foot-sub { font-size: 12px; color: var(--muted-2); margin-top: 3px; }
+    .foot-sub a { color: var(--muted); text-decoration: none; }
+    .foot-sub a:hover { color: var(--accent); }
+
+    .foot-links { display: flex; gap: 1.5rem; }
+
+    .foot-links a {
+      font-size: 13px; color: var(--muted);
+      text-decoration: none; transition: color 0.2s;
+    }
+
+    .foot-links a:hover { color: var(--accent); }
+
+    .foot-right { font-size: 12px; color: var(--muted-2); }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 768px) {
+      nav { padding: .875rem 1.25rem; }
+      .nav-links { display: none; flex-direction: column; }
+      .nav-toggle { display: flex; }
+
+      .nav-links.open {
+        display: flex;
+        position: fixed;
+        top: 60px; left: 0; right: 0;
+        background: rgba(6,6,6,0.96);
+        backdrop-filter: blur(14px);
+        padding: 1.5rem 1.25rem;
+        border-bottom: 1px solid var(--border);
+        gap: 1.25rem;
+      }
+
+      .hero-stats { gap: 2rem; }
+      .how-steps { grid-template-columns: 1fr; gap: 2rem; }
+      .how-arrow { display: none; }
+      .pricing-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+      footer { flex-direction: column; align-items: flex-start; }
+      .foot-links { flex-wrap: wrap; }
+    }
+
+    @media (max-width: 480px) {
+      section { padding: 4rem 1.25rem; }
+      .hero-stats { gap: 1.5rem; }
+      .stat-num { font-size: 1.75rem; }
+    }
+
+    /* ===== FLASK SVG ANIMATIONS (overlay + nav) ===== */
+    @keyframes sp-tw  { 0%,100%{opacity:1}  50%{opacity:.15} }
+    @keyframes bub-r  { 0%{transform:translateY(0);opacity:0} 12%{opacity:.72} 85%{opacity:.35} 100%{transform:translateY(-17px);opacity:0} }
+    @keyframes liq-s  { 0%,100%{opacity:.18} 50%{opacity:.38} }
+    @keyframes nn-g   { 0%,100%{opacity:.4}  50%{opacity:.85} }
+    .fs1{animation:sp-tw 2.1s 0s   ease-in-out infinite}
+    .fs2{animation:sp-tw 2.7s .45s ease-in-out infinite}
+    .fs3{animation:sp-tw 1.85s .9s ease-in-out infinite}
+    .fs4{animation:sp-tw 2.45s 1.2s ease-in-out infinite}
+    .fs5{animation:sp-tw 3.0s .65s ease-in-out infinite}
+    .fs6{animation:sp-tw 2.2s 1.5s ease-in-out infinite}
+    .fb1{animation:bub-r 2.9s 0s    ease-in-out infinite}
+    .fb2{animation:bub-r 2.9s .97s  ease-in-out infinite}
+    .fb3{animation:bub-r 2.9s 1.94s ease-in-out infinite}
+    .flq{animation:liq-s 2.6s ease-in-out infinite}
+    .fnn{animation:nn-g  2.0s .3s   ease-in-out infinite}
+
+    /* ===== BREW LOADING OVERLAY ===== */
+    #brew-overlay {
+      position: fixed; inset: 0; background: #060606;
+      z-index: 500; display: none;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 1.75rem;
+    }
+    #brew-overlay.visible { display: flex; }
+    .brew-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem; font-weight: 500; color: var(--text);
+      text-align: center; transition: opacity .3s;
+    }
+    .brew-sub-txt {
+      font-size: 13px; color: var(--muted); text-align: center;
+      margin-top: -.875rem; transition: opacity .3s;
+    }
+    .brew-dots { display: flex; gap: 7px; }
+    .brew-dot-b {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+      animation: br-b 1.3s infinite ease-in-out;
+    }
+    .brew-dot-b:nth-child(2) { animation-delay: .22s; }
+    .brew-dot-b:nth-child(3) { animation-delay: .44s; }
+    @keyframes br-b { 0%,80%,100%{transform:translateY(0);opacity:.35} 40%{transform:translateY(-9px);opacity:1} }
+
+    /* ===== DEMO SHOWCASE ===== */
+    #showcase { background: var(--bg-2); overflow: hidden; padding: 6rem 0 5rem; }
+    .sc-hdr { max-width: 1100px; margin: 0 auto; padding: 0 2rem 2.5rem; }
+    .sc-wrap {
+      overflow-x: auto; scrollbar-width: none;
+      padding: 1rem 0 2.5rem; -webkit-overflow-scrolling: touch;
+    }
+    .sc-wrap::-webkit-scrollbar { display: none; }
+    .sc-track {
+      display: flex; gap: 20px;
+      padding: 0 calc(50vw - 160px); width: max-content;
+    }
+    .dc {
+      min-width: 300px; max-width: 300px;
+      --accent-c: #f0a500; --accent-soft: rgba(240,165,0,.14); --accent-soft2: rgba(240,165,0,.32);
+      background: var(--bg-3); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.25rem; flex-shrink: 0;
+      position: relative; overflow: hidden;
+      transition: transform .55s cubic-bezier(.23,1,.32,1), opacity .55s, border-color .55s, box-shadow .55s;
+      opacity: .38; transform: scale(.91); cursor: pointer;
+    }
+    .dc.on {
+      opacity: 1; transform: scale(1.04);
+      border-color: var(--accent-soft2);
+      box-shadow: 0 10px 50px rgba(0,0,0,.55), 0 0 0 1px var(--accent-soft);
+    }
+    @keyframes pop-bounce {
+      0%   { transform: scale(1.04); }
+      28%  { transform: scale(1.13); }
+      55%  { transform: scale(0.985); }
+      78%  { transform: scale(1.05); }
+      100% { transform: scale(1.04); }
+    }
+    .dc.dc-pop-bounce { animation: pop-bounce .6s cubic-bezier(.34,1.56,.64,1) 1; }
+    .dc-h { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+    .dc-ico { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; background: var(--accent-soft); }
+    .dc-tit { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; color: var(--text); }
+    .dc-dat { font-size: 11px; color: var(--muted-2); margin-top: 1px; }
+    .dc-tag { margin-left: auto; font-size: 11px; padding: 3px 9px; border-radius: 99px; background: var(--accent-soft); color: var(--accent-c); font-family: 'Space Grotesk', sans-serif; font-weight: 500; flex-shrink: 0; transition: background .3s, color .3s; }
+    .dc-tag.live-tag { position: relative; padding-left: 16px; }
+    .dc-tag.live-tag::before {
+      content: ''; position: absolute; left: 7px; top: 50%; transform: translateY(-50%);
+      width: 5px; height: 5px; border-radius: 50%; background: #34c759;
+      animation: live-pulse 1.4s infinite;
+    }
+    @keyframes live-pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(52,199,89,.5)} 50%{opacity:.5;box-shadow:0 0 0 4px rgba(52,199,89,0)} }
+    .dc-row { display: flex; align-items: center; gap: 9px; padding: 6px 9px; border-radius: 8px; margin-bottom: 4px; font-size: 13px; color: var(--muted); transition: background .35s, color .35s; }
+    .dc-row.hi { background: var(--accent-soft); color: var(--text); }
+    .dc-row.warn-row { transition: background .4s, color .4s; }
+    .dc.on .warn-row { background: rgba(255,59,48,.1); color: #ff8f87; animation: warn-flash 1.4s .5s 2; }
+    @keyframes warn-flash { 0%,100%{background:rgba(255,59,48,.1)} 50%{background:rgba(255,59,48,.2)} }
+    .dc-cb { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--muted-2); display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; color: var(--accent-c); transition: background .3s, border-color .3s; }
+    .dc-cb.ck  { background: var(--accent-soft); border-color: var(--accent-c); }
+    .dc-cb.hi-ck { background: var(--accent-c); border-color: var(--accent-c); color: #000; font-weight: 700; }
+    .dc-cb.urgent-cb { background: rgba(255,59,48,.15); border-color: #ff3b30; color: #ff3b30; animation: urgent-pulse 1.3s infinite; }
+    @keyframes urgent-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,59,48,.4)} 50%{box-shadow:0 0 0 5px rgba(255,59,48,0)} }
+    .dc.on .dc-cb.hi-ck { animation: ck-p .4s .7s both ease-out; }
+    @keyframes ck-p { 0%{transform:scale(0);opacity:0} 60%{transform:scale(1.35)} 100%{transform:scale(1);opacity:1} }
+
+    /* Card-level toast — anchored to the CARD, never to a row, so it can never collide with row text */
+    .dc-toast {
+      position: absolute; top: 12px; right: 12px; z-index: 3;
+      background: var(--accent-c); color: #000;
+      font-size: 11px; font-weight: 600; padding: 4px 11px; border-radius: 99px;
+      font-family: 'Space Grotesk', sans-serif;
+      opacity: 0; transform: translateY(-8px) scale(.92);
+      transition: opacity .35s 1.05s, transform .35s 1.05s;
+      white-space: nowrap;
+      box-shadow: 0 6px 16px rgba(0,0,0,.4);
+      pointer-events: none;
+    }
+    .dc-toast.warn-toast { background: #ff3b30; color: #fff; }
+    .dc.on .dc-toast { opacity: 1; transform: translateY(0) scale(1); }
+
+    .dc-pb { height: 4px; background: rgba(255,255,255,.06); border-radius: 99px; margin-top: .75rem; overflow: hidden; }
+    .dc-pf { height: 100%; background: var(--accent-c); border-radius: 99px; width: 0; transition: width .9s .45s ease; }
+    .dc.on .dc-pf { width: var(--pw, 50%); }
+    .dc-foot { font-size: 12px; color: var(--muted); margin-top: 6px; text-align: center; }
+    .dc-nr { display: flex; align-items: center; justify-content: space-between; padding: 6px 9px; border-radius: 8px; margin-bottom: 4px; font-size: 13px; transition: background .35s; }
+    .dc-nr.hi { background: var(--accent-soft); }
+    .dc-nr .lbl { color: var(--muted); } .dc-nr.hi .lbl { color: var(--text); }
+    .dc-nr .val { font-family: 'Space Grotesk', sans-serif; font-weight: 500; color: var(--text); transition: color .3s; }
+    .dc-nr.hi .val { color: var(--accent-c); }
+    .dc-bs { display: inline-flex; align-items: center; font-size: 11px; padding: 2px 9px; border-radius: 99px; font-family: 'Space Grotesk', sans-serif; font-weight: 500; flex-shrink: 0; transition: background .3s, color .3s; }
+    .dc-bs.paid    { background: rgba(52,199,89,.15); color: #34c759; }
+    .dc-bs.pending { background: rgba(255,255,255,.06); color: var(--muted); }
+    .dc-bs.due     { background: rgba(255,59,48,.15);  color: #ff3b30; }
+    .dc.on .st-a { animation: badge-pop .5s 1.0s both ease-out; }
+    @keyframes badge-pop { 0%{transform:scale(0) rotate(-8deg);opacity:0} 55%{transform:scale(1.18) rotate(3deg)} 100%{transform:scale(1) rotate(0);opacity:1} }
+
+    /* ===== ICEBERG CLOSING CARD ===== */
+    .dc-iceberg { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 1.5rem; }
+    .iceberg-svg-wrap { margin-bottom: .25rem; }
+    .iceberg-title { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; color: var(--text); margin: .5rem 0 .5rem; line-height: 1.3; }
+    .iceberg-sub { font-size: 12.5px; color: var(--muted); line-height: 1.6; margin-bottom: 1.1rem; }
+    .iceberg-cta {
+      display: inline-block; background: var(--accent-c); color: #04222e;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px;
+      padding: 8px 20px; border-radius: 99px; text-decoration: none;
+      transition: transform .15s, filter .2s;
+    }
+    .iceberg-cta:hover { transform: scale(1.04); filter: brightness(1.08); }
+    @keyframes wave-drift { 0%{transform:translateX(0)} 50%{transform:translateX(-7px)} 100%{transform:translateX(0)} }
+    .ib-wave { animation: wave-drift 4s ease-in-out infinite; }
+    @keyframes ib-glow { 0%,100%{opacity:.55} 50%{opacity:1} }
+    .ib-sparkle { animation: ib-glow 2.1s ease-in-out infinite; }
+    @keyframes ib-deep-pulse { 0%,100%{opacity:.18} 50%{opacity:.4} }
+    .ib-deep-dot { animation: ib-deep-pulse 2.6s ease-in-out infinite; }
+    .dc-nr .val.count-up { font-variant-numeric: tabular-nums; }
+    .sc-dots { display: flex; gap: 7px; justify-content: center; padding: 0 2rem; }
+    .sdot { width: 6px; height: 6px; border-radius: 99px; background: rgba(255,255,255,.14); transition: width .3s, background .3s; cursor: pointer; }
+    .sdot.on { width: 24px; background: var(--accent); }
+  </style>
+</head>
+
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<!-- ===== BREW LOADING OVERLAY ===== -->
+<div id="brew-overlay" role="status" aria-live="polite">
+  <svg width="108" viewBox="0 0 165 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path class="flq" d="M37,100 L127,100 L142,122 L22,122 Z" fill="#f0a500"/>
+    <path d="M70,28 L94,28 L94,52 L142,122 L22,122 L70,52 Z" stroke="#f0a500" stroke-width="3" stroke-linejoin="round" fill="none"/>
+    <line x1="65" y1="28" x2="99" y2="28" stroke="#f0a500" stroke-width="3" stroke-linecap="round"/>
+    <line x1="37" y1="100" x2="127" y2="100" stroke="#f0a500" stroke-width="1.5" stroke-linecap="round" opacity=".45"/>
+    <circle class="fb1" cx="70" cy="116" r="3" fill="#f0a500"/>
+    <circle class="fb2" cx="92" cy="119" r="2.4" fill="#f0a500"/>
+    <circle class="fb3" cx="81" cy="112" r="2" fill="#f0a500"/>
+    <line class="fnn" x1="72" y1="65" x2="92" y2="60" stroke="#f0a500" stroke-width="1" opacity=".5"/>
+    <line class="fnn" x1="72" y1="65" x2="82" y2="82" stroke="#f0a500" stroke-width="1" opacity=".5"/>
+    <line class="fnn" x1="92" y1="60" x2="82" y2="82" stroke="#f0a500" stroke-width="1" opacity=".5"/>
+    <line class="fnn" x1="82" y1="82" x2="100" y2="88" stroke="#f0a500" stroke-width="1" opacity=".5"/>
+    <circle cx="72" cy="65" r="3.5" fill="#f0a500"/>
+    <circle cx="92" cy="60" r="3" fill="#f0a500"/>
+    <circle cx="82" cy="82" r="4" fill="#f0a500"/>
+    <circle cx="100" cy="88" r="2.5" fill="#f0a500"/>
+    <circle cx="68" cy="94" r="2.5" fill="#f0a500"/>
+    <path class="fs1" d="M135,26 L137.6,35.4 L147,38 L137.6,40.6 L135,50 L132.4,40.6 L123,38 L132.4,35.4 Z" fill="#f0a500"/>
+    <path class="fs2" d="M28,46 L30,53 L37,55 L30,57 L28,64 L26,57 L19,55 L26,53 Z" fill="#f0a500"/>
+    <path class="fs3" d="M150,75 L151.5,80.5 L157,82 L151.5,83.5 L150,89 L148.5,83.5 L143,82 L148.5,80.5 Z" fill="#f0a500"/>
+    <path class="fs4" d="M50,16 L51.3,20.7 L56,22 L51.3,23.3 L50,28 L48.7,23.3 L44,22 L48.7,20.7 Z" fill="#f0a500"/>
+    <path class="fs5" d="M112,13 L113.1,16.9 L117,18 L113.1,19.1 L112,23 L110.9,19.1 L107,18 L110.9,16.9 Z" fill="#f0a500"/>
+    <path class="fs6" d="M22,98 L23.1,101.9 L27,103 L23.1,104.1 L22,108 L20.9,104.1 L17,103 L20.9,101.9 Z" fill="#f0a500" opacity=".7"/>
+    <circle cx="105" cy="13" r="2.5" fill="#f0a500" opacity=".8"/>
+    <circle cx="153" cy="60" r="2" fill="#f0a500" opacity=".6"/>
+    <circle cx="14" cy="72" r="1.5" fill="#f0a500" opacity=".5"/>
+  </svg>
+  <div class="brew-label" id="brew-label">Brewing your solution...</div>
+  <div class="brew-sub-txt" id="brew-sub">Analysing your problem</div>
+  <div class="brew-dots">
+    <div class="brew-dot-b"></div>
+    <div class="brew-dot-b"></div>
+    <div class="brew-dot-b"></div>
+  </div>
+</div>
+
+<nav id="main-nav">
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-mark" style="background:none;padding:0;overflow:visible">
+      <svg width="34" height="34" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+        <rect x="0" y="0" width="100" height="100" rx="20" fill="#f0a500"/>
+        <path d="M42,18 L58,18 L58,32 L82,82 L18,82 L42,32 Z" stroke="#0a0603" stroke-width="5" stroke-linejoin="round" fill="rgba(10,6,3,0.18)"/>
+        <line x1="38" y1="18" x2="62" y2="18" stroke="#0a0603" stroke-width="5" stroke-linecap="round"/>
+        <path class="fs1" d="M80,20 L81.3,24.7 L86,26 L81.3,27.3 L80,32 L78.7,27.3 L74,26 L78.7,24.7 Z" fill="#0a0603" opacity=".85"/>
+        <circle cx="48" cy="42" r="2.5" fill="#0a0603" opacity=".8"/>
+        <circle cx="57" cy="39" r="2" fill="#0a0603" opacity=".8"/>
+        <circle cx="53" cy="52" r="3" fill="#0a0603" opacity=".8"/>
+        <line class="fnn" x1="48" y1="42" x2="57" y2="39" stroke="#0a0603" stroke-width=".9" opacity=".4"/>
+        <line class="fnn" x1="48" y1="42" x2="53" y2="52" stroke="#0a0603" stroke-width=".9" opacity=".4"/>
+        <line class="fnn" x1="57" y1="39" x2="53" y2="52" stroke="#0a0603" stroke-width=".9" opacity=".4"/>
+      </svg>
+    </div>
+    <div class="nav-logo-info">
+      <div class="nav-logo-name">Jain Labs</div>
+      <div class="nav-logo-sub">Part of Jain Studio</div>
+    </div>
+  </a>
+
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#audience">Who it's for</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="https://www.jainstudio.in" target="_blank">← Jain Studio</a></li>
+    <li><a href="#final-cta" class="nav-cta">Start a project</a></li>
+  </ul>
+
+  <button class="nav-toggle" id="nav-toggle" aria-label="Menu">☰</button>
+</nav>
+
+<main>
+
+  <!-- ===== HERO ===== -->
+  <section id="hero">
+
+    <div class="hero-badge">
+      <div class="badge-dot"></div>
+      New · Part of Jain Studio
+    </div>
+
+    <h1 class="hero-title">
+      You name the<br>
+      <span class="accent">problem.</span><br>
+      <span class="line-muted">We build the</span> solution.
+    </h1>
+
+    <p class="hero-sub">
+      AI-powered custom websites for every challenge in your life —
+      students, families, freelancers, businesses. India and beyond.
+    </p>
+
+    <div class="hero-input-row">
+      <input type="text" id="hero-input"
+        placeholder="What problem do you want to solve?"
+        autocomplete="off" spellcheck="false">
+      <button class="hero-btn" onclick="runDemo()">Build mine →</button>
+    </div>
+
+    <div class="hero-chips">
+      <span class="chip" onclick="fillChip('I can\'t keep track of my monthly expenses')">Expense tracking</span>
+      <span class="chip" onclick="fillChip('I need to manage my client invoices')">Invoice tracker</span>
+      <span class="chip" onclick="fillChip('My study schedule is always a mess')">Study planner</span>
+      <span class="chip" onclick="fillChip('I want to track my team\'s daily tasks')">Team tasks</span>
+      <span class="chip" onclick="fillChip('I need a health and wellness log')">Wellness log</span>
+    </div>
+
+    <div id="demo-wrap">
+      <div class="demo-card">
+        <div class="demo-header">
+          <div class="demo-dot"></div>
+          <div class="demo-label">Jain Labs would build</div>
+        </div>
+        <div id="demo-text"></div>
+        <div class="demo-feats" id="demo-feats"></div>
+        <div class="demo-actions">
+          <a href="#final-cta" class="demo-act-primary">Let's build this</a>
+          <button class="demo-act-secondary" onclick="resetDemo()">Try another</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">3–7</div>
+        <div class="stat-label">Days to deliver</div>
+      </div>
+      <div>
+        <div class="stat-num">5</div>
+        <div class="stat-label">Audience types</div>
+      </div>
+      <div>
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Problems we solve</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DEMO SHOWCASE ===== -->
+  <section id="showcase">
+    <div class="sc-hdr reveal">
+      <div class="sec-label">Live demos</div>
+      <h2 class="sec-title">See it before you commit.</h2>
+      <p class="sec-sub">Still unsure? Watch these mini demos — real interactions from websites we actually deliver.</p>
+    </div>
+
+    <div class="sc-wrap" id="sc-wrap">
+      <div class="sc-track" id="sc-track">
+
+        <!-- CARD 1: Wellness Tracker — purple theme, bounce-tick interaction -->
+        <div class="dc on" id="dc-0" style="--accent-c:#a372f7; --accent-soft:rgba(163,114,247,.14); --accent-soft2:rgba(163,114,247,.34)">
+          <div class="dc-toast">1 task done! 🎉</div>
+          <div class="dc-h">
+            <div class="dc-ico">🏃</div>
+            <div><div class="dc-tit">Wellness Tracker</div><div class="dc-dat">Mon · June 30</div></div>
+            <div class="dc-tag">Today</div>
+          </div>
+          <div class="dc-row"><div class="dc-cb ck">✓</div><span>Drink 2L of water</span></div>
+          <div class="dc-row hi">
+            <div class="dc-cb hi-ck">✓</div>
+            <span>Move your body</span>
+          </div>
+          <div class="dc-row"><div class="dc-cb"></div><span>8 hours of sleep</span></div>
+          <div class="dc-row"><div class="dc-cb"></div><span>Meditate 10 min</span></div>
+          <div class="dc-pb"><div class="dc-pf" style="--pw:50%"></div></div>
+          <div class="dc-foot">2 of 4 daily goals complete</div>
+        </div>
+
+        <!-- CARD 2: Expense Tracker — amber theme, warning-flash interaction -->
+        <div class="dc" id="dc-1" style="--accent-c:#f0a500; --accent-soft:rgba(240,165,0,.14); --accent-soft2:rgba(240,165,0,.34)">
+          <div class="dc-toast warn-toast">Over budget ⚠</div>
+          <div class="dc-h">
+            <div class="dc-ico">💰</div>
+            <div><div class="dc-tit">Expense Tracker</div><div class="dc-dat">June 2026</div></div>
+            <div class="dc-tag">Monthly</div>
+          </div>
+          <div class="dc-nr"><span class="lbl">Groceries</span><span class="val">₹3,200</span></div>
+          <div class="dc-nr warn-row"><span class="lbl">Dining out</span><span class="val">₹4,800</span></div>
+          <div class="dc-nr"><span class="lbl">Transport</span><span class="val">₹1,050</span></div>
+          <div class="dc-nr"><span class="lbl">Entertainment</span><span class="val">₹649</span></div>
+          <div class="dc-pb"><div class="dc-pf" style="--pw:78%"></div></div>
+          <div class="dc-foot">₹9,699 of ₹12,500 budget used</div>
+        </div>
+
+        <!-- CARD 3: Invoice Tracker — blue theme, badge-pop interaction -->
+        <div class="dc" id="dc-2" style="--accent-c:#00a2ff; --accent-soft:rgba(0,162,255,.14); --accent-soft2:rgba(0,162,255,.34)">
+          <div class="dc-toast">Just received! 💸</div>
+          <div class="dc-h">
+            <div class="dc-ico">📄</div>
+            <div><div class="dc-tit">Invoice Tracker</div><div class="dc-dat">3 clients</div></div>
+            <div class="dc-tag">This week</div>
+          </div>
+          <div class="dc-row" style="justify-content:space-between">
+            <span>Sharma &amp; Co.</span><div class="dc-bs paid">✓ Paid</div>
+          </div>
+          <div class="dc-row hi" style="justify-content:space-between">
+            <span>Mehta Designs</span>
+            <div class="dc-bs paid st-a">✓ Paid</div>
+          </div>
+          <div class="dc-row" style="justify-content:space-between">
+            <span>Patel Agency</span><div class="dc-bs pending">Pending</div>
+          </div>
+          <div class="dc-row" style="justify-content:space-between">
+            <span>Verma &amp; Bros</span><div class="dc-bs due">Overdue</div>
+          </div>
+          <div class="dc-pb"><div class="dc-pf" style="--pw:50%"></div></div>
+          <div class="dc-foot">₹34,000 collected · ₹24,000 due</div>
+        </div>
+
+        <!-- CARD 4: Study Planner — pink theme, urgent-pulse interaction -->
+        <div class="dc" id="dc-3" style="--accent-c:#ff6b9d; --accent-soft:rgba(255,107,157,.14); --accent-soft2:rgba(255,107,157,.34)">
+          <div class="dc-toast warn-toast">Due tomorrow!</div>
+          <div class="dc-h">
+            <div class="dc-ico">📚</div>
+            <div><div class="dc-tit">Study Planner</div><div class="dc-dat">Semester 3</div></div>
+            <div class="dc-tag">Week 4</div>
+          </div>
+          <div class="dc-row"><div class="dc-cb ck">✓</div><span>Read Chapter 6</span></div>
+          <div class="dc-row hi">
+            <div class="dc-cb urgent-cb">!</div>
+            <span>Maths Assignment</span>
+          </div>
+          <div class="dc-row"><div class="dc-cb"></div><span>Physics lab report</span></div>
+          <div class="dc-row"><div class="dc-cb ck">✓</div><span>Group presentation</span></div>
+          <div class="dc-pb"><div class="dc-pf" style="--pw:50%"></div></div>
+          <div class="dc-foot">2 of 4 tasks complete</div>
+        </div>
+
+        <!-- CARD 5: Sales Dashboard — green theme, count-up interaction -->
+        <div class="dc" id="dc-4" style="--accent-c:#34c759; --accent-soft:rgba(52,199,89,.14); --accent-soft2:rgba(52,199,89,.34)">
+          <div class="dc-toast">↑ 12% vs yesterday</div>
+          <div class="dc-h">
+            <div class="dc-ico">🏪</div>
+            <div><div class="dc-tit">Sales Dashboard</div><div class="dc-dat">Today · Live</div></div>
+            <div class="dc-tag live-tag">Live</div>
+          </div>
+          <div class="dc-nr hi">
+            <span class="lbl">Today's sales</span>
+            <span class="val count-up" id="live-sales" data-target="18400">₹0</span>
+          </div>
+          <div class="dc-nr"><span class="lbl">Orders placed</span><span class="val">23</span></div>
+          <div class="dc-nr"><span class="lbl">Items sold</span><span class="val">68</span></div>
+          <div class="dc-nr"><span class="lbl">Top item</span><span class="val" style="font-size:12px">Rajma Rice</span></div>
+          <div class="dc-pb"><div class="dc-pf" style="--pw:82%"></div></div>
+          <div class="dc-foot">82% of daily target reached</div>
+        </div>
+
+        <!-- CARD 6: Iceberg closer — icy blue theme, custom layout -->
+        <div class="dc dc-iceberg" id="dc-5" style="--accent-c:#5fd4ff; --accent-soft:rgba(95,212,255,.14); --accent-soft2:rgba(95,212,255,.34)">
+          <div class="iceberg-svg-wrap">
+            <svg width="150" viewBox="0 0 200 168" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Iceberg illustration — small tip above water, vast shape submerged below">
+
+              <!-- deep water backdrop -->
+              <rect x="0" y="74" width="200" height="94" fill="url(#ib-deep-grad)" />
+              <defs>
+                <linearGradient id="ib-deep-grad" x1="0" y1="74" x2="0" y2="168" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#5fd4ff" stop-opacity="0.16"/>
+                  <stop offset="1" stop-color="#04222e" stop-opacity="0.05"/>
+                </linearGradient>
+                <linearGradient id="ib-tip-grad" x1="100" y1="10" x2="100" y2="76" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#eaf9ff"/>
+                  <stop offset="1" stop-color="#5fd4ff"/>
+                </linearGradient>
+              </defs>
+
+              <!-- submerged mass (the huge unseen part) -->
+              <polygon points="80,76 120,76 172,158 28,158" fill="#5fd4ff" opacity=".16"/>
+              <polygon points="86,76 114,76 150,140 50,140" fill="#5fd4ff" opacity=".12"/>
+
+              <!-- faint hidden "AI" nodes inside the submerged mass -->
+              <circle class="ib-deep-dot" cx="78"  cy="108" r="2.2" fill="#5fd4ff"/>
+              <circle class="ib-deep-dot" cx="122" cy="120" r="1.8" fill="#5fd4ff" style="animation-delay:.5s"/>
+              <circle class="ib-deep-dot" cx="100" cy="138" r="2"   fill="#5fd4ff" style="animation-delay:1s"/>
+              <circle class="ib-deep-dot" cx="62"  cy="132" r="1.5" fill="#5fd4ff" style="animation-delay:1.5s"/>
+
+              <!-- rising bubbles -->
+              <circle class="fb1" cx="92"  cy="120" r="2"   fill="#cdf3ff"/>
+              <circle class="fb2" cx="108" cy="110" r="1.6" fill="#cdf3ff"/>
+              <circle class="fb3" cx="100" cy="135" r="1.4" fill="#cdf3ff"/>
+
+              <!-- tip above water -->
+              <polygon points="100,12 84,76 116,76" fill="url(#ib-tip-grad)"/>
+
+              <!-- sparkle above tip -->
+              <path class="ib-sparkle" d="M100,0 L101.6,5.6 L107,7 L101.6,8.4 L100,14 L98.4,8.4 L93,7 L98.4,5.6 Z" fill="#eaf9ff"/>
+
+              <!-- waterline (animated drift) -->
+              <path class="ib-wave" d="M-20,76 Q5,70 30,76 T80,76 T130,76 T180,76 T230,76"
+                stroke="#5fd4ff" stroke-width="2" fill="none" opacity=".55" stroke-linecap="round"/>
+              <path class="ib-wave" d="M-20,79 Q5,84 30,79 T80,79 T130,79 T180,79 T230,79"
+                stroke="#5fd4ff" stroke-width="1.3" fill="none" opacity=".3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <p class="iceberg-title">This is just the tip of the iceberg.</p>
+          <p class="iceberg-sub">Whatever you're picturing right now, we've probably already thought past it. Tell us your problem and let's find out.</p>
+          <a href="#final-cta" class="iceberg-cta">Tell us your problem →</a>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="sc-dots" id="sc-dots">
+      <div class="sdot on" onclick="popCard(0)"></div>
+      <div class="sdot"    onclick="popCard(1)"></div>
+      <div class="sdot"    onclick="popCard(2)"></div>
+      <div class="sdot"    onclick="popCard(3)"></div>
+      <div class="sdot"    onclick="popCard(4)"></div>
+      <div class="sdot"    onclick="popCard(5)"></div>
+    </div>
+  </section>
+
+
+  <!-- ===== WHO IT'S FOR ===== -->
+  <section id="audience">
+    <div class="max-w">
+      <div class="reveal">
+        <div class="sec-label">Who it's for</div>
+        <h2 class="sec-title">One service. Every level.</h2>
+        <p class="sec-sub" style="margin-bottom:3rem">
+          Hover a card to see what we build for each kind of person. Or tap on mobile.
+        </p>
+      </div>
+
+      <div class="aud-grid">
+
+        <div class="aud-card reveal reveal-delay-1">
+          <div class="aud-inner">
+            <div class="aud-face">
+              <div class="aud-icon" style="background:rgba(163,114,247,0.12)">🎓</div>
+              <div class="aud-name">Students</div>
+              <div class="aud-desc">Stop drowning in deadlines. Get a personal academic command centre.</div>
+              <div class="aud-price">From ₹1,999 / $29</div>
+            </div>
+            <div class="aud-face aud-back-face">
+              <div class="aud-back-label">What we build</div>
+              <ul class="aud-feats">
+                <li>Study planner & timetable</li>
+                <li>Assignment deadline board</li>
+                <li>Exam countdown tracker</li>
+                <li>Grade & score logger</li>
+                <li>Attendance monitor</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="aud-card reveal reveal-delay-2">
+          <div class="aud-inner">
+            <div class="aud-face">
+              <div class="aud-icon" style="background:rgba(52,199,89,0.12)">🏠</div>
+              <div class="aud-name">Families</div>
+              <div class="aud-desc">Manage your home like a pro — expenses, health, groceries, all in one place.</div>
+              <div class="aud-price">From ₹2,999 / $49</div>
+            </div>
+            <div class="aud-face aud-back-face">
+              <div class="aud-back-label">What we build</div>
+              <ul class="aud-feats">
+                <li>Monthly expense tracker</li>
+                <li>Grocery & budget planner</li>
+                <li>Family health log</li>
+                <li>Subscription manager</li>
+                <li>Home maintenance log</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="aud-card reveal reveal-delay-3">
+          <div class="aud-inner">
+            <div class="aud-face">
+              <div class="aud-icon" style="background:rgba(240,165,0,0.12)">💼</div>
+              <div class="aud-name">Freelancers</div>
+              <div class="aud-desc">Run your solo career like a business — clients, invoices, time, all tracked.</div>
+              <div class="aud-price">From ₹4,999 / $79</div>
+            </div>
+            <div class="aud-face aud-back-face">
+              <div class="aud-back-label">What we build</div>
+              <ul class="aud-feats">
+                <li>Client & project manager</li>
+                <li>Invoice & payment tracker</li>
+                <li>Time logger per project</li>
+                <li>Income & expense dashboard</li>
+                <li>Proposal & quote builder</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="aud-card reveal reveal-delay-4">
+          <div class="aud-inner">
+            <div class="aud-face">
+              <div class="aud-icon" style="background:rgba(0,162,255,0.11)">🏪</div>
+              <div class="aud-name">Small businesses</div>
+              <div class="aud-desc">Your own internal tool — no SaaS fees, no data shared with strangers.</div>
+              <div class="aud-price">From ₹7,499 / $129</div>
+            </div>
+            <div class="aud-face aud-back-face">
+              <div class="aud-back-label">What we build</div>
+              <ul class="aud-feats">
+                <li>Inventory & stock dashboard</li>
+                <li>Daily sales & revenue log</li>
+                <li>Customer record system</li>
+                <li>Staff attendance tracker</li>
+                <li>Supplier & vendor manager</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="aud-card reveal reveal-delay-4">
+          <div class="aud-inner">
+            <div class="aud-face">
+              <div class="aud-icon" style="background:rgba(255,59,48,0.11)">🏢</div>
+              <div class="aud-name">Enterprises</div>
+              <div class="aud-desc">Custom internal platforms that replace costly off-the-shelf software.</div>
+              <div class="aud-price">From ₹14,999 / $249</div>
+            </div>
+            <div class="aud-face aud-back-face">
+              <div class="aud-back-label">What we build</div>
+              <ul class="aud-feats">
+                <li>Multi-user internal tools</li>
+                <li>Reporting & analytics portal</li>
+                <li>Workflow automation system</li>
+                <li>Cross-department dashboard</li>
+                <li>Custom to your operations</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOW IT WORKS ===== -->
+  <section id="how">
+    <div class="max-w">
+      <div class="reveal" style="text-align:center; max-width:480px; margin:0 auto 4rem">
+        <div class="sec-label">The process</div>
+        <h2 class="sec-title">Simple. Fast. Yours.</h2>
+      </div>
+
+      <div class="how-steps reveal">
+        <div class="how-step">
+          <div class="how-num">1</div>
+          <div class="how-step-title">Tell us your problem</div>
+          <div class="how-step-desc">
+            Fill in a quick form or book a free 15-min call. Describe what's hard in your life or business. That's it.
+          </div>
+        </div>
+        <div class="how-arrow">→</div>
+        <div class="how-step">
+          <div class="how-num">2</div>
+          <div class="how-step-title">We build in 3–5 days</div>
+          <div class="how-step-desc">
+            We use AI to design and build your custom website. You get a live preview link by Day 3 for feedback.
+          </div>
+        </div>
+        <div class="how-arrow">→</div>
+        <div class="how-step">
+          <div class="how-num">3</div>
+          <div class="how-step-title">You use it daily</div>
+          <div class="how-step-desc">
+            We hand over full access. 7-day bug support included. Optional monthly maintenance available.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PRICING ===== -->
+  <section id="pricing">
+    <div class="max-w">
+      <div class="reveal" style="text-align:center">
+        <div class="sec-label">Pricing — starting at ₹1,999 / $29</div>
+        <h2 class="sec-title">Every quote is custom.</h2>
+        <p class="sec-sub" style="margin: .875rem auto 2rem; text-align:center">
+          These are base prices — your final quote is built around exactly what <em>you</em> need, nothing more. No package forces you to pay for things you won't use.
+        </p>
+        <div style="display:flex;justify-content:center;margin-bottom:1.5rem">
+          <a href="services.html#calculator" style="font-size:13px;color:var(--accent);text-decoration:none;border:1px solid var(--accent-border);padding:6px 18px;border-radius:99px;font-family:'Space Grotesk',sans-serif;font-weight:500;transition:background .2s" onmouseover="this.style.background='var(--accent-dim)'" onmouseout="this.style.background='transparent'">
+            Build your exact quote →
+          </a>
+        </div>
+
+        <div class="toggle-wrap">
+          <button class="tog-btn on" id="btn-in" onclick="setMarket('in')">🇮🇳 India (₹)</button>
+          <button class="tog-btn"    id="btn-gl" onclick="setMarket('gl')">🌐 Global ($)</button>
+        </div>
+      </div>
+
+      <div class="pricing-grid reveal">
+
+        <div class="price-card">
+          <div class="price-tier-label">Student</div>
+          <div class="price-who">For learners</div>
+          <div class="price-amount" id="p0">₹1,999</div>
+          <div class="price-note">one-time build</div>
+          <ul class="price-feats">
+            <li>1 custom website</li>
+            <li>1 core feature</li>
+            <li>Mobile-friendly</li>
+            <li>7-day bug support</li>
+          </ul>
+          <a href="#final-cta" class="price-cta">Get started</a>
+        </div>
+
+        <div class="price-card">
+          <div class="price-tier-label">Family</div>
+          <div class="price-who">For households</div>
+          <div class="price-amount" id="p1">₹2,999</div>
+          <div class="price-note">one-time build</div>
+          <ul class="price-feats">
+            <li>1 custom website</li>
+            <li>Up to 3 features</li>
+            <li>Mobile-friendly</li>
+            <li>7-day bug support</li>
+          </ul>
+          <a href="#final-cta" class="price-cta">Get started</a>
+        </div>
+
+        <div class="price-card featured">
+          <div class="price-badge-tag">Popular</div>
+          <div class="price-tier-label">Freelancer</div>
+          <div class="price-who">For independent pros</div>
+          <div class="price-amount" id="p2">₹4,999</div>
+          <div class="price-note">one-time build</div>
+          <ul class="price-feats">
+            <li>1 custom website</li>
+            <li>Up to 5 features</li>
+            <li>Custom branding</li>
+            <li>Mobile-friendly</li>
+            <li>14-day support</li>
+          </ul>
+          <a href="#final-cta" class="price-cta">Get started</a>
+        </div>
+
+        <div class="price-card">
+          <div class="price-tier-label">Business</div>
+          <div class="price-who">For small teams</div>
+          <div class="price-amount" id="p3">₹7,499</div>
+          <div class="price-note">one-time build</div>
+          <ul class="price-feats">
+            <li>1 custom website</li>
+            <li>Unlimited features</li>
+            <li>Multi-user support</li>
+            <li>Custom branding</li>
+            <li>30-day support</li>
+          </ul>
+          <a href="#final-cta" class="price-cta">Get started</a>
+        </div>
+
+        <div class="price-card">
+          <div class="price-tier-label">Enterprise</div>
+          <div class="price-who">For organisations</div>
+          <div class="price-amount" id="p4">Custom</div>
+          <div class="price-note">tailored quote</div>
+          <ul class="price-feats">
+            <li>Full custom system</li>
+            <li>Team + admin roles</li>
+            <li>Integrations & API</li>
+            <li>Dedicated support</li>
+            <li>Scale strategy</li>
+          </ul>
+          <a href="#final-cta" class="price-cta">Talk to us</a>
+        </div>
+
+      </div>
+
+      <p class="reveal" style="text-align:center;font-size:13px;color:var(--muted);margin-top:1.75rem">
+        All prices are one-time. Optional maintenance: ₹499–999/month (India) &nbsp;·&nbsp; $9–29/month (Global)
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== FINAL CTA ===== -->
+  <section id="final-cta">
+    <h2 class="final-title reveal">
+      What's your<br><span class="accent">problem?</span>
+    </h2>
+    <p class="final-sub reveal">
+      Tell us in 15 minutes. We'll build your website in days.
+    </p>
+    <div class="final-btns reveal">
+      <!-- Replace XXXXXXXXXX with your WhatsApp number -->
+      <a href="https://wa.me/919909664569?text=Hi%2C%20I%27d%20like%20to%20discuss%20a%20project%20with%20Jain%20Labs"
+         class="btn-primary" target="_blank">WhatsApp us</a>
+      <a href="mailto:hello@jainstudio.in" class="btn-ghost">Send an email</a>
+    </div>
+    <p class="final-note reveal">
+      Prefer a call? &nbsp;<a href="#">Book a free 15-min slot →</a>
+    </p>
+  </section>
+
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div>
+    <a href="#" class="foot-logo">Jain Labs</a>
+    <div class="foot-sub">
+      Part of <a href="https://www.jainstudio.in" target="_blank">Jain Studio</a>
+      &nbsp;·&nbsp;
+      Also visit <a href="https://www.jainstudio.in/graphics/jain-designs.html" target="_blank">Jain Designs</a>
+    </div>
+  </div>
+
+  <div class="foot-links">
+    <a href="#audience">Services</a>
+    <a href="#pricing">Pricing</a>
+    <a href="https://www.jainstudio.in" target="_blank">Jain Studio</a>
+    <a href="https://www.jainstudio.in/graphics/jain-designs.html" target="_blank">Jain Designs</a>
+  </div>
+
+  <div class="foot-right">
+    © <span id="foot-year"></span> Jain Studio. All rights reserved.
+  </div>
+</footer>
+
+<script>
+/* =============================================
+   THREE.JS — FLOATING PARTICLE BACKGROUND
+   ============================================= */
+(function () {
+  const canvas = document.getElementById('bg-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.z = 6;
+
+  const isMobile = window.innerWidth < 768;
+
+  /* --- Particle field --- */
+  const COUNT = isMobile ? 80 : 220;
+  const pos = new Float32Array(COUNT * 3);
+  for (let i = 0; i < COUNT; i++) {
+    pos[i * 3]     = (Math.random() - 0.5) * 32;
+    pos[i * 3 + 1] = (Math.random() - 0.5) * 18;
+    pos[i * 3 + 2] = (Math.random() - 0.5) * 8 - 2;
+  }
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const pMat = new THREE.PointsMaterial({
+    color: 0xf0a500, size: 0.045,
+    transparent: true, opacity: 0.45
+  });
+  scene.add(new THREE.Points(pGeo, pMat));
+
+  /* --- Floating wireframe shapes --- */
+  const shapes = [];
+  const shapeGeo = new THREE.IcosahedronGeometry(0.22, 0);
+  const SHAPE_COUNT = isMobile ? 7 : 18;
+
+  for (let i = 0; i < SHAPE_COUNT; i++) {
+    const mat = new THREE.MeshBasicMaterial({
+      color: 0xf0a500, wireframe: true,
+      transparent: true, opacity: Math.random() * 0.13 + 0.03
+    });
+    const mesh = new THREE.Mesh(shapeGeo, mat);
+    mesh.position.set(
+      (Math.random() - 0.5) * 28,
+      (Math.random() - 0.5) * 14,
+      (Math.random() - 0.5) * 6 - 3
+    );
+    mesh.rotation.set(
+      Math.random() * Math.PI,
+      Math.random() * Math.PI,
+      Math.random() * Math.PI
+    );
+    const initY = mesh.position.y;
+    const floatPhase = Math.random() * Math.PI * 2;
+    const rx = (Math.random() - 0.5) * 0.006;
+    const ry = (Math.random() - 0.5) * 0.006;
+    shapes.push({ mesh, initY, floatPhase, rx, ry });
+    scene.add(mesh);
+  }
+
+  /* --- Mouse parallax --- */
+  let mx = 0, my = 0, tx = 0, ty = 0;
+
+  window.addEventListener('mousemove', e => {
+    tx = (e.clientX / window.innerWidth  - 0.5) * 1.6;
+    ty = -(e.clientY / window.innerHeight - 0.5) * 0.9;
+  });
+
+  window.addEventListener('touchmove', e => {
+    if (!e.touches[0]) return;
+    tx = (e.touches[0].clientX / window.innerWidth  - 0.5) * 0.9;
+    ty = -(e.touches[0].clientY / window.innerHeight - 0.5) * 0.5;
+  }, { passive: true });
+
+  /* --- Resize --- */
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  /* --- Animate --- */
+  const clock = new THREE.Clock();
+  (function tick() {
+    requestAnimationFrame(tick);
+    const t = clock.getElapsedTime();
+
+    mx += (tx - mx) * 0.04;
+    my += (ty - my) * 0.04;
+
+    shapes.forEach(({ mesh, initY, floatPhase, rx, ry }) => {
+      mesh.rotation.x += rx;
+      mesh.rotation.y += ry;
+      mesh.position.y = initY + Math.sin(t * 0.35 + floatPhase) * 0.28;
+    });
+
+    camera.position.x += (mx * 0.55 - camera.position.x) * 0.04;
+    camera.position.y += (my * 0.35 - camera.position.y) * 0.04;
+    camera.lookAt(scene.position);
+
+    renderer.render(scene, camera);
+  })();
+})();
+
+
+/* =============================================
+   NAVIGATION
+   ============================================= */
+const mainNav   = document.getElementById('main-nav');
+const navLinks  = document.getElementById('nav-links');
+const navToggle = document.getElementById('nav-toggle');
+
+window.addEventListener('scroll', () => {
+  mainNav.classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+navToggle.addEventListener('click', () => {
+  const open = navLinks.classList.toggle('open');
+  navToggle.textContent = open ? '✕' : '☰';
+});
+
+navLinks.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+    navToggle.textContent = '☰';
+  });
+});
+
+
+/* =============================================
+   HERO — DEMO PROBLEM MATCHER
+   ============================================= */
+const solutions = {
+  expense: {
+    text: 'A smart expense tracker where you log daily spends, set monthly budgets per category, and see visual breakdowns of exactly where your money goes.',
+    feats: ['Daily expense log', 'Budget alerts', 'Category charts', 'Monthly summary']
+  },
+  invoice: {
+    text: 'A clean invoicing dashboard where you create client invoices, track payment status in real time, and instantly see outstanding amounts at a glance.',
+    feats: ['Invoice generator', 'Payment tracker', 'Client list', 'Revenue overview']
+  },
+  study: {
+    text: 'A personal academic hub with your timetable, assignment deadlines, exam countdowns, and a quick grade tracker — all in one focused view.',
+    feats: ['Study planner', 'Deadline board', 'Exam countdown', 'Grade tracker']
+  },
+  task: {
+    text: 'A team task board where members are assigned work, deadlines are tracked, and progress is visible to everyone on the team at a glance.',
+    feats: ['Task assignment', 'Status tracking', 'Deadline alerts', 'Team dashboard']
+  },
+  health: {
+    text: 'A wellness log where you record daily workouts, meals, water intake, and sleep hours — with weekly trends so you can actually see your progress.',
+    feats: ['Daily health log', 'Workout tracker', 'Sleep monitor', 'Weekly trends']
+  },
+  bank: {
+    text: 'A private bank record portal where you log transactions, categorise them, and see a clear monthly financial picture without sharing data with any third party.',
+    feats: ['Transaction log', 'Category view', 'Monthly summary', 'Private & secure']
+  },
+  inventory: {
+    text: 'A stock management dashboard where you track product quantities, get low-stock alerts instantly, and keep a full log of sales and purchases.',
+    feats: ['Stock tracker', 'Low-stock alerts', 'Sales log', 'Purchase history']
+  },
+  default: {
+    text: 'A fully custom website built around the exact problem you described — with the precise features you need and nothing you don\'t.',
+    feats: ['Custom-built for you', 'Mobile-friendly', 'Delivered in 3–5 days', '7-day support']
+  }
+};
+
+function detect(str) {
+  const s = str.toLowerCase();
+  if (/expense|spend|budget|money|cost|finance|saving/.test(s)) return 'expense';
+  if (/invoice|client|freelan|payment|bill|quote/.test(s))      return 'invoice';
+  if (/study|exam|assignment|class|school|college|student|deadline/.test(s)) return 'study';
+  if (/task|team|project|assign|workflow|manage team/.test(s))  return 'task';
+  if (/health|workout|sleep|fitness|wellness|diet|meal|water/.test(s)) return 'health';
+  if (/bank|transaction|statement|account|transfer/.test(s))    return 'bank';
+  if (/stock|inventory|product|store|shop|supply|warehouse/.test(s)) return 'inventory';
+  return 'default';
+}
+
+function runDemo() {
+  const val = document.getElementById('hero-input').value.trim();
+  if (!val) { document.getElementById('hero-input').focus(); return; }
+
+  /* Show brew overlay */
+  const overlay = document.getElementById('brew-overlay');
+  const labelEl = document.getElementById('brew-label');
+  const subEl   = document.getElementById('brew-sub');
+
+  const steps = [
+    ['Brewing your solution...', 'Analysing your problem'],
+    ['Mixing the right features...', 'Selecting what you need'],
+    ['Almost ready...', 'Putting the finishing touches'],
+  ];
+  let step = 0;
+  labelEl.textContent = steps[0][0];
+  subEl.textContent   = steps[0][1];
+  overlay.classList.add('visible');
+
+  const stepTimer = setInterval(() => {
+    step++;
+    if (step < steps.length) {
+      labelEl.style.opacity = '0';
+      subEl.style.opacity   = '0';
+      setTimeout(() => {
+        labelEl.textContent   = steps[step][0];
+        subEl.textContent     = steps[step][1];
+        labelEl.style.opacity = '1';
+        subEl.style.opacity   = '1';
+      }, 300);
+    }
+  }, 900);
+
+  setTimeout(() => {
+    clearInterval(stepTimer);
+    overlay.classList.remove('visible');
+
+    /* Reveal result */
+    const key  = detect(val);
+    const data = solutions[key];
+    document.getElementById('demo-text').textContent = data.text;
+    document.getElementById('demo-feats').innerHTML =
+      data.feats.map(f => `<span class="demo-feat">${f}</span>`).join('');
+    const wrap = document.getElementById('demo-wrap');
+    wrap.style.display = 'block';
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 2800);
+}
+
+function fillChip(text) {
+  document.getElementById('hero-input').value = text;
+  runDemo();
+}
+
+function resetDemo() {
+  document.getElementById('demo-wrap').style.display = 'none';
+  document.getElementById('hero-input').value = '';
+  document.getElementById('hero-input').focus();
+}
+
+document.getElementById('hero-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') runDemo();
+});
+
+/* Typewriter placeholder */
+const phs = [
+  "I can't keep track of my monthly expenses...",
+  "My study schedule is always a mess...",
+  "I need to manage client invoices easily...",
+  "I want to log my team's daily tasks...",
+  "I need a private record of my bank account...",
+  "My inventory tracking is completely manual...",
+];
+let phIdx = 0, phCh = 0, phDel = false;
+
+function typePH() {
+  const inp = document.getElementById('hero-input');
+  if (document.activeElement === inp) { setTimeout(typePH, 1500); return; }
+  const cur = phs[phIdx];
+  if (!phDel) {
+    inp.placeholder = cur.slice(0, ++phCh);
+    if (phCh === cur.length) { phDel = true; setTimeout(typePH, 2200); return; }
+    setTimeout(typePH, 72);
+  } else {
+    inp.placeholder = cur.slice(0, --phCh);
+    if (phCh === 0) { phDel = false; phIdx = (phIdx + 1) % phs.length; }
+    setTimeout(typePH, 36);
+  }
+}
+setTimeout(typePH, 1400);
+
+
+/* =============================================
+   SCROLL REVEAL — INTERSECTION OBSERVER
+   ============================================= */
+const revObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => revObserver.observe(el));
+
+
+/* =============================================
+   AUDIENCE — MOBILE TAP TO FLIP
+   ============================================= */
+document.querySelectorAll('.aud-card').forEach(card => {
+  card.addEventListener('click', () => card.classList.toggle('flipped'));
+});
+
+
+/* =============================================
+   PRICING TOGGLE
+   ============================================= */
+const indPrices = ['₹1,999', '₹2,999', '₹4,999', '₹7,499', 'Custom'];
+const glbPrices = ['$29',    '$49',    '$79',    '$129',   'Custom'];
+
+function setMarket(m) {
+  const prices = m === 'in' ? indPrices : glbPrices;
+  prices.forEach((p, i) => {
+    const el = document.getElementById('p' + i);
+    el.style.opacity = '0';
+    setTimeout(() => { el.textContent = p; el.style.opacity = '1'; }, 200);
+  });
+  document.getElementById('btn-in').classList.toggle('on', m === 'in');
+  document.getElementById('btn-gl').classList.toggle('on', m === 'gl');
+}
+
+
+/* =============================================
+   DEMO SHOWCASE — CAROUSEL
+   ============================================= */
+const scCards   = Array.from(document.querySelectorAll('.dc'));
+const scDots    = Array.from(document.querySelectorAll('.sdot'));
+const scWrap    = document.getElementById('sc-wrap');
+let scActive       = 0;
+let scAutoTimer    = null;
+let scResumeTimer  = null;
+let hoverPaused     = false;
+let clickPaused     = false;
+
+function animateCountUp(el) {
+  const target = parseInt(el.dataset.target, 10);
+  if (!target) return;
+  const dur = 1100, start = performance.now();
+  function step(now) {
+    const p = Math.min((now - start) / dur, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = '₹' + Math.round(target * eased).toLocaleString('en-IN');
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* Smooth, quiet transition — used by the automatic loop */
+function goSlide(i) {
+  scActive = (i + scCards.length) % scCards.length;
+
+  scCards.forEach((c, idx) => c.classList.toggle('on', idx === scActive));
+  scDots.forEach((d, idx) => d.classList.toggle('on', idx === scActive));
+
+  const target = scCards[scActive];
+  target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+
+  const liveEl = target.querySelector('#live-sales');
+  if (liveEl) { liveEl.textContent = '₹0'; setTimeout(() => animateCountUp(liveEl), 350); }
+}
+
+/* Bouncy "pop" transition — used when the person clicks/taps a card or dot directly.
+   Pauses the auto-loop for a longer beat so they have time to actually read it. */
+function popCard(i) {
+  goSlide(i);
+  const card = scCards[scActive];
+  card.classList.remove('dc-pop-bounce');
+  void card.offsetWidth; /* force reflow so the animation can restart */
+  card.classList.add('dc-pop-bounce');
+
+  clickPaused = true;
+  clearTimeout(scResumeTimer);
+  scResumeTimer = setTimeout(() => { clickPaused = false; }, 5200);
+}
+
+function scNext() { goSlide(scActive + 1); }
+
+function startAuto() {
+  clearInterval(scAutoTimer);
+  scAutoTimer = setInterval(() => {
+    if (!hoverPaused && !clickPaused) scNext();
+  }, 3800);
+}
+
+scCards.forEach((card, idx) => {
+  card.addEventListener('click', () => popCard(idx));
+});
+
+scWrap.addEventListener('mouseenter', () => { hoverPaused = true; });
+scWrap.addEventListener('mouseleave', () => { hoverPaused = false; });
+scWrap.addEventListener('touchstart', () => {
+  hoverPaused = true;
+  clearTimeout(scResumeTimer);
+  scResumeTimer = setTimeout(() => { hoverPaused = false; }, 5200);
+}, { passive: true });
+
+const scShowObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { goSlide(0); startAuto(); }
+    else { clearInterval(scAutoTimer); }
+  });
+}, { threshold: 0.35 });
+scShowObserver.observe(document.getElementById('showcase'));
+
+
+/* =============================================
+   FOOTER YEAR
+   ============================================= */
+document.getElementById('foot-year').textContent = new Date().getFullYear();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Start Your Project — Jain Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#060606;--bg-2:#0d0d0d;--bg-3:#161616;
+      --border:rgba(255,255,255,.07);--border-hi:rgba(255,255,255,.15);
+      --text:#f0ede8;--muted:#888;--muted-2:#444;
+      --accent:#f0a500;--accent-hi:#ffc13d;
+      --accent-dim:rgba(240,165,0,.12);--accent-border:rgba(240,165,0,.22);
+      --green:#34c759;--red:#ff3b30;--blue:#00a2ff;--purple:#a372f7;--pink:#ff6b9d;
+      --r-sm:8px;--r:12px;--r-lg:20px;
+    }
+    html{scroll-behavior:smooth;scroll-padding-top:80px}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden;min-height:100vh}
+    h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;letter-spacing:-.025em;line-height:1.1}
+    ::selection{background:rgba(240,165,0,.22);color:var(--text)}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bg-3);border-radius:4px}
+
+    /* ── FLASK ANIMATIONS ── */
+    @keyframes sp-tw{0%,100%{opacity:1}50%{opacity:.15}}
+    @keyframes bub-r{0%{transform:translateY(0);opacity:0}12%{opacity:.72}85%{opacity:.35}100%{transform:translateY(-17px);opacity:0}}
+    @keyframes liq-s{0%,100%{opacity:.18}50%{opacity:.38}}
+    @keyframes nn-g{0%,100%{opacity:.4}50%{opacity:.85}}
+    .fs1{animation:sp-tw 2.1s 0s ease-in-out infinite}.fs2{animation:sp-tw 2.7s .45s ease-in-out infinite}
+    .fs3{animation:sp-tw 1.85s .9s ease-in-out infinite}.flq{animation:liq-s 2.6s ease-in-out infinite}
+    .fnn{animation:nn-g 2.0s .3s ease-in-out infinite}
+    .fb1{animation:bub-r 2.9s 0s ease-in-out infinite}.fb2{animation:bub-r 2.9s .97s ease-in-out infinite}.fb3{animation:bub-r 2.9s 1.94s ease-in-out infinite}
+    @keyframes shake-x{0%,100%{transform:translateX(0)}18%{transform:translateX(-7px)}36%{transform:translateX(7px)}54%{transform:translateX(-5px)}72%{transform:translateX(4px)}88%{transform:translateX(-2px)}}
+    @keyframes float-y{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    @keyframes glow-pulse{0%,100%{box-shadow:0 0 0 0 var(--accent-dim)}50%{box-shadow:0 0 32px 8px var(--accent-dim)}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes step-in{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── CINEMATIC OVERLAY ── */
+    #cinematic-overlay{position:fixed;inset:0;z-index:700;display:none;align-items:center;justify-content:center;overflow:hidden;background:#060606}
+    #cinematic-overlay.visible{display:flex}
+    #warp-canvas{position:absolute;inset:0;width:100%;height:100%}
+    .cin-center{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:1.5rem;text-align:center;pointer-events:none}
+    .cin-flask{animation:float-y 2s ease-in-out infinite}
+    .cin-text{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:500;color:var(--text);transition:opacity .3s}
+    .cin-sub{font-size:13px;color:var(--muted);margin-top:-.75rem;transition:opacity .3s}
+    .cin-dots{display:flex;gap:7px}
+    .cin-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:br-b 1.3s infinite ease-in-out}
+    .cin-dot:nth-child(2){animation-delay:.22s}.cin-dot:nth-child(3){animation-delay:.44s}
+    @keyframes br-b{0%,80%,100%{transform:translateY(0);opacity:.35}40%{transform:translateY(-9px);opacity:1}}
+    /* Shockwave for accept-proposal */
+    @keyframes shockwave{0%{transform:scale(0);opacity:.9}100%{transform:scale(3.5);opacity:0}}
+    .shockwave{position:absolute;width:220px;height:220px;border-radius:50%;border:2px solid var(--accent);animation:shockwave .8s ease-out forwards;pointer-events:none}
+    .shockwave2{animation-delay:.18s;border-color:rgba(240,165,0,.4)}
+    .shockwave3{animation-delay:.36s;border-color:rgba(240,165,0,.2)}
+
+    /* ── AMBIENT BG GLOWS ── */
+    .ambient-glow{position:fixed;pointer-events:none;border-radius:50%;filter:blur(90px);z-index:0}
+    #glow-1{width:500px;height:500px;background:rgba(240,165,0,.05);top:-100px;right:-100px}
+    #glow-2{width:400px;height:400px;background:rgba(163,114,247,.04);bottom:10%;left:-150px}
+    #glow-3{width:300px;height:300px;background:rgba(240,165,0,.04);bottom:30%;right:5%}
+
+    /* ── NAV ── */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(6,6,6,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+    .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .nav-logo-name{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;color:var(--text);letter-spacing:-.03em}
+    .nav-logo-sub{font-size:10px;color:var(--muted-2)}
+    .nav-back{font-size:13px;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:7px 16px;border-radius:99px;transition:color .2s,border-color .2s}
+    .nav-back:hover{color:var(--text);border-color:var(--border-hi)}
+
+    /* ── PROGRESS ── */
+    #progress-wrap{position:fixed;top:64px;left:0;right:0;z-index:99;background:rgba(13,13,13,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:.875rem 2rem}
+    .prog-inner{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:0}
+    .prog-step{display:flex;align-items:center;gap:8px;flex:1}
+    .prog-step:last-child{flex:0}
+    .prog-num{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--muted-2);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;color:var(--muted-2);flex-shrink:0;transition:all .4s}
+    .prog-step.done .prog-num{background:var(--accent);border-color:var(--accent);color:#000;box-shadow:0 0 12px rgba(240,165,0,.4)}
+    .prog-step.active .prog-num{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 3px rgba(240,165,0,.15)}
+    .prog-label{font-size:11.5px;color:var(--muted-2);font-family:'Space Grotesk',sans-serif;font-weight:500;transition:color .4s;white-space:nowrap}
+    .prog-step.active .prog-label,.prog-step.done .prog-label{color:var(--text)}
+    .prog-line{flex:1;height:1.5px;background:var(--border);margin:0 8px;transition:background .4s}
+    .prog-step.done+.prog-line{background:var(--accent)}
+
+    /* ── PAGE SHELL ── */
+    #page-shell{padding:9.5rem 1.5rem 4rem;min-height:100vh;position:relative;z-index:1}
+    .step-wrap{max-width:800px;margin:0 auto;display:none}
+    .step-wrap.active{display:block;animation:step-in .5s cubic-bezier(.23,1,.32,1)}
+
+    /* ── CHAPTER SECTIONS (Step 1 visual design) ── */
+    .chapter{margin-bottom:2.5rem;position:relative}
+    .chapter-header{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
+    .chapter-line{flex:1;height:1px;background:linear-gradient(to right,var(--border),transparent)}
+    .chapter-tag{font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;color:var(--accent);padding:3px 10px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:99px;white-space:nowrap}
+
+    /* ── FORM ATOMS ── */
+    .step-label-sm{font-size:11px;color:var(--accent);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;margin-bottom:.5rem}
+    .step-title{font-size:clamp(1.9rem,5vw,3rem);font-weight:700;color:var(--text);margin-bottom:.75rem}
+    .step-title .accent{color:var(--accent)}
+    .step-sub{font-size:1rem;color:var(--muted);font-weight:300;line-height:1.75;margin-bottom:2.5rem;max-width:520px}
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:1rem}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .f-label{font-size:12px;color:var(--muted);font-family:'Space Grotesk',sans-serif;font-weight:500;letter-spacing:.04em}
+    .f-input,.f-select,.f-textarea{
+      background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-sm);
+      color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:.75rem 1rem;
+      width:100%;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none}
+    .f-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;background-size:9px;padding-right:2.5rem}
+    .f-textarea{resize:vertical;min-height:120px;line-height:1.65}
+    .f-input::placeholder,.f-textarea::placeholder{color:var(--muted-2)}
+    .f-input:focus,.f-select:focus,.f-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+    .f-input.err,.f-select.err,.f-textarea.err{border-color:var(--red);box-shadow:0 0 0 3px rgba(255,59,48,.1)}
+    .f-err{font-size:11px;color:var(--red);margin-top:2px;display:none}
+    .f-err.show{display:block}
+
+    /* ── CONTACT METHOD TOGGLE ── */
+    .contact-method-tabs{display:flex;gap:8px;margin-bottom:1rem}
+    .cm-tab{flex:1;padding:.625rem;background:var(--bg-2);border:1.5px solid var(--border);border-radius:var(--r-sm);cursor:pointer;text-align:center;font-size:13px;color:var(--muted);font-family:'Space Grotesk',sans-serif;font-weight:500;transition:all .2s}
+    .cm-tab:hover{border-color:var(--border-hi);color:var(--text)}
+    .cm-tab.on{border-color:var(--accent-border);background:var(--accent-dim);color:var(--accent)}
+    .cm-panel{display:none}.cm-panel.show{display:block;animation:fadeUp .3s ease}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .wa-prefix{position:relative}
+    .wa-prefix .prefix{position:absolute;left:1rem;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);pointer-events:none}
+    .wa-prefix .f-input{padding-left:2rem}
+    .phone-row{display:grid;grid-template-columns:90px 1fr;gap:8px}
+    .country-badge{display:flex;align-items:center;gap:6px;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:.75rem .875rem;font-size:13px;color:var(--muted);cursor:default}
+
+    /* ── CURRENCY TOGGLE ── */
+    .cur-toggle{display:inline-flex;background:var(--bg-2);border:1px solid var(--border);border-radius:99px;padding:3px;margin-bottom:1.25rem}
+    .cur-btn{background:transparent;border:none;color:var(--muted);font-size:12px;font-family:'Space Grotesk',sans-serif;font-weight:500;padding:5px 14px;border-radius:99px;cursor:pointer;transition:background .25s,color .25s}
+    .cur-btn.on{background:var(--accent);color:#000}
+
+    /* ── TIER CARDS (themed, like demo cards) ── */
+    .tier-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px;margin-bottom:1.25rem}
+    .t-card{
+      background:var(--bg-2);border:1.5px solid var(--border);border-radius:var(--r);
+      padding:1.25rem 1rem;cursor:pointer;transition:border-color .25s,background .25s,transform .2s,box-shadow .25s;
+      text-align:center;position:relative;overflow:hidden}
+    .t-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s}
+    .t-card:hover{border-color:var(--border-hi);transform:translateY(-3px)}
+    .t-card.sel{transform:translateY(-4px)}
+    /* Per-tier theme */
+    .t-card[data-tier="Student"]{--tc:#a372f7;--tc-dim:rgba(163,114,247,.14);--tc-b:rgba(163,114,247,.32)}
+    .t-card[data-tier="Family"]{--tc:#34c759;--tc-dim:rgba(52,199,89,.14);--tc-b:rgba(52,199,89,.32)}
+    .t-card[data-tier="Freelancer"]{--tc:#f0a500;--tc-dim:rgba(240,165,0,.14);--tc-b:rgba(240,165,0,.32)}
+    .t-card[data-tier="Business"]{--tc:#00a2ff;--tc-dim:rgba(0,162,255,.14);--tc-b:rgba(0,162,255,.32)}
+    .t-card[data-tier="Enterprise"]{--tc:#ff6b9d;--tc-dim:rgba(255,107,157,.14);--tc-b:rgba(255,107,157,.32)}
+    .t-card.sel{border-color:var(--tc-b);background:var(--tc-dim);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+    .t-card.sel::before{background:radial-gradient(ellipse at top,var(--tc-dim) 0%,transparent 70%);opacity:1}
+    .t-card-ico{font-size:26px;margin-bottom:.5rem;display:block}
+    .t-card-name{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px}
+    .t-card-price{font-size:11.5px;color:var(--muted);font-family:'Space Grotesk',sans-serif;font-weight:500;transition:color .2s}
+    .t-card.sel .t-card-price{color:var(--tc)}
+    .t-card-flag{font-size:9.5px;color:var(--muted-2);margin-top:4px;transition:color .2s}
+    .t-card.sel .t-card-flag{color:var(--tc);opacity:.8}
+    /* Selected tick badge */
+    .t-tick{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;background:var(--tc);display:flex;align-items:center;justify-content:center;font-size:9px;color:#000;font-weight:700;opacity:0;transform:scale(0);transition:opacity .2s,transform .25s cubic-bezier(.34,1.56,.64,1)}
+    .t-card.sel .t-tick{opacity:1;transform:scale(1)}
+
+    /* ── STUDENT VERIFY ── */
+    #stu-verify{background:rgba(163,114,247,.08);border:1px solid rgba(163,114,247,.25);border-radius:var(--r-sm);padding:.875rem 1rem;display:none;margin-top:.5rem;margin-bottom:1rem}
+    #stu-verify label{display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:12.5px;color:var(--text);line-height:1.55}
+    #stu-verify label input{margin-top:2px;accent-color:#a372f7;width:15px;height:15px;flex-shrink:0}
+    #stu-verify .v-note{font-size:11px;color:var(--muted);margin-top:6px;padding-left:24px;line-height:1.5}
+
+    /* ── FEATURE ROWS ── */
+    .feat-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem}
+    .feat-row{display:flex;align-items:center;gap:11px;padding:.75rem .875rem;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;transition:border-color .2s,background .2s,transform .15s}
+    .feat-row:hover{border-color:var(--border-hi);transform:translateX(3px)}
+    .feat-row.sel{border-color:var(--accent-border);background:var(--accent-dim)}
+    .feat-cb{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--muted-2);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;color:#000;transition:all .2s}
+    .feat-row.sel .feat-cb{background:var(--accent);border-color:var(--accent);font-weight:700;animation:ck-pop .35s cubic-bezier(.34,1.56,.64,1)}
+    @keyframes ck-pop{0%{transform:scale(0)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+    .feat-info{flex:1}.feat-name{font-size:13.5px;color:var(--text);font-weight:500}.feat-desc{font-size:11.5px;color:var(--muted);margin-top:1px}
+    .feat-price{font-size:12.5px;color:var(--muted);font-family:'Space Grotesk',sans-serif;flex-shrink:0;transition:color .2s}
+    .feat-row.sel .feat-price{color:var(--accent)}
+
+    /* ── ASAP NOTICE ── */
+    #asap-notice{background:rgba(255,107,157,.08);border:1px solid rgba(255,107,157,.25);border-radius:var(--r-sm);padding:.75rem 1rem;display:none;font-size:12.5px;color:var(--pink);line-height:1.55;margin-top:.5rem}
+    #asap-notice strong{color:var(--pink);font-weight:600}
+
+    /* ── LIVE PRICE BAR (floats at bottom on mobile, sidebar on desktop) ── */
+    #price-bar{position:fixed;bottom:0;left:0;right:0;z-index:98;background:rgba(13,13,13,.96);backdrop-filter:blur(14px);border-top:1px solid var(--border);padding:.875rem 1.5rem;display:none;align-items:center;justify-content:space-between;gap:1rem}
+    #price-bar.show{display:flex}
+    .pb-label{font-size:11px;color:var(--muted);font-family:'Space Grotesk',sans-serif;font-weight:500;text-transform:uppercase;letter-spacing:.07em}
+    .pb-price{font-family:'Space Grotesk',sans-serif;font-size:1.35rem;font-weight:700;color:var(--accent);letter-spacing:-.02em}
+    .pb-note{font-size:11px;color:var(--muted-2);margin-top:1px}
+    .pb-cta{background:var(--accent);color:#000;border:none;padding:9px 22px;border-radius:99px;font-size:13px;font-weight:600;font-family:'Space Grotesk',sans-serif;cursor:pointer;white-space:nowrap;transition:background .2s,transform .15s;flex-shrink:0}
+    .pb-cta:hover{background:var(--accent-hi);transform:scale(1.03)}
+
+    /* ── STEP ACTIONS ── */
+    .step-actions{display:flex;gap:12px;align-items:center;margin-top:2.5rem;flex-wrap:wrap;padding-bottom:5rem}
+    .btn-next{background:var(--accent);color:#000;border:none;padding:14px 34px;border-radius:99px;font-size:15px;font-weight:600;font-family:'Space Grotesk',sans-serif;cursor:pointer;transition:background .2s,transform .15s,box-shadow .2s}
+    .btn-next:hover{background:var(--accent-hi);transform:scale(1.03);box-shadow:0 8px 24px rgba(240,165,0,.3)}
+    .btn-back{background:transparent;color:var(--muted);border:1px solid var(--border);padding:14px 28px;border-radius:99px;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;transition:border-color .2s,color .2s}
+    .btn-back:hover{border-color:var(--border-hi);color:var(--text)}
+
+    /* ── STEP 2: PROPOSAL ── */
+    .proposal-card{background:var(--bg-2);border:1px solid var(--accent-border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:1.75rem;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+    .proposal-header{background:linear-gradient(135deg,rgba(240,165,0,.13) 0%,transparent 60%);padding:2rem;border-bottom:1px solid var(--border)}
+    .prop-badge{font-size:10px;color:var(--accent);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;margin-bottom:.5rem}
+    .prop-title{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;color:var(--text)}
+    .prop-meta{font-size:12.5px;color:var(--muted);display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:.625rem}
+    .proposal-body{padding:2rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+    .prop-sec-title{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.875rem;display:flex;align-items:center;gap:6px}
+    .prop-sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    .prop-list{list-style:none;display:flex;flex-direction:column;gap:7px}
+    .prop-list li{font-size:13px;color:var(--muted);display:flex;align-items:flex-start;gap:7px;line-height:1.5}
+    .prop-list li::before{content:'→';color:var(--accent);flex-shrink:0;font-size:11px;margin-top:2px}
+    .prop-list li.incl::before{content:'✓';color:var(--green)}
+    .prop-list li.highlight{color:var(--text);font-weight:500}
+    .price-section{grid-column:1/-1}
+    .price-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:.5px solid var(--border)}
+    .price-row:last-child{border-bottom:none;margin-top:.5rem;padding-top:.875rem}
+    .price-lbl{font-size:13px;color:var(--muted)}.price-val{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--text)}
+    .price-total-lbl{font-size:15px;font-weight:600;color:var(--text)}.price-total-val{font-size:1.5rem;font-weight:700;color:var(--accent);letter-spacing:-.02em}
+    .advance-note{margin-top:1rem;padding:.75rem 1rem;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:var(--r-sm);font-size:12.5px;color:var(--muted);line-height:1.55}
+    .advance-note strong{color:var(--accent)}
+    .proposal-footer{padding:1.25rem 2rem;background:rgba(0,0,0,.2);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+    .prop-footer-note{font-size:12px;color:var(--muted);line-height:1.55}
+    .btn-print{background:var(--bg-3);color:var(--muted);border:1px solid var(--border);padding:8px 18px;border-radius:99px;font-size:12.5px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:500;transition:color .2s,border-color .2s}
+    .btn-print:hover{color:var(--text);border-color:var(--border-hi)}
+
+    /* ── STEP 3: CONTRACT ── */
+    .contract-card{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:2rem;margin-bottom:1.75rem}
+    .clause{margin-bottom:1.35rem;padding-bottom:1.35rem;border-bottom:.5px solid var(--border)}
+    .clause:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+    .clause-title{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:var(--text);margin-bottom:.375rem;display:flex;align-items:center;gap:8px}
+    .clause-num{width:22px;height:22px;background:var(--accent-dim);color:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;border:1px solid var(--accent-border)}
+    .clause-body{font-size:12.5px;color:var(--muted);line-height:1.7;padding-left:30px}
+    .agree-block{background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:var(--r);padding:1.25rem 1.5rem;margin-bottom:1.25rem}
+    .agree-row{display:flex;align-items:flex-start;gap:10px;cursor:pointer}
+    .agree-row input[type=checkbox]{margin-top:3px;accent-color:var(--accent);width:16px;height:16px;flex-shrink:0;cursor:pointer}
+    .agree-text{font-size:13px;color:var(--text);line-height:1.55;font-weight:500}
+    .agree-sig-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:1rem}
+    .sig-label{font-size:11px;color:var(--muted);font-family:'Space Grotesk',sans-serif;font-weight:500;margin-bottom:5px}
+
+    /* ── STEP 4: PAYMENT (slot-reserved design) ── */
+    .slot-card{background:linear-gradient(135deg,rgba(52,199,89,.1) 0%,var(--bg-2) 50%);border:1px solid rgba(52,199,89,.25);border-radius:var(--r-lg);padding:2rem;margin-bottom:1.5rem;text-align:center}
+    .slot-icon{font-size:3.5rem;margin-bottom:.75rem;display:block;animation:float-y 3s ease-in-out infinite}
+    .slot-title{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;color:var(--text);margin-bottom:.5rem}
+    .slot-sub{font-size:14px;color:var(--muted);line-height:1.65;max-width:440px;margin:0 auto}
+    .slot-detail-card{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
+    .slot-detail-row{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:.5px solid var(--border);font-size:13px}
+    .slot-detail-row:last-child{border-bottom:none}
+    .slot-detail-row .lbl{color:var(--muted)}.slot-detail-row .val{color:var(--text);font-family:'Space Grotesk',sans-serif;font-weight:500}
+    .slot-detail-row .val.accent{color:var(--accent)}
+    .process-steps{display:flex;flex-direction:column;gap:0;margin-bottom:1.5rem}
+    .proc-step{display:flex;align-items:flex-start;gap:12px;padding:.75rem 0;border-bottom:.5px solid var(--border)}
+    .proc-step:last-child{border-bottom:none}
+    .proc-num{width:26px;height:26px;border-radius:50%;background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);font-size:11px;font-weight:700;font-family:'Space Grotesk',sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+    .proc-step.done .proc-num{background:var(--green);border-color:var(--green);color:#000}
+    .proc-title{font-size:13.5px;color:var(--text);font-weight:500}.proc-sub{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5}
+    .security-note{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:var(--r-sm);padding:.875rem 1rem;font-size:12px;color:var(--muted-2);line-height:1.65;margin-bottom:1.25rem;display:flex;align-items:flex-start;gap:9px}
+    .security-note .ico{font-size:15px;flex-shrink:0;margin-top:1px}
+    .btn-whatsapp{display:inline-flex;align-items:center;justify-content:center;gap:9px;background:#25D366;color:#000;border:none;padding:14px 26px;border-radius:99px;font-size:14px;font-weight:600;font-family:'Space Grotesk',sans-serif;cursor:pointer;text-decoration:none;transition:filter .2s,transform .15s,box-shadow .2s}
+    .btn-whatsapp:hover{filter:brightness(1.08);transform:scale(1.02);box-shadow:0 8px 24px rgba(37,211,102,.3)}
+    .btn-email-confirm{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--bg-2);color:var(--text);border:1px solid var(--border-hi);padding:14px 22px;border-radius:99px;font-size:14px;font-weight:500;font-family:'Space Grotesk',sans-serif;cursor:pointer;text-decoration:none;transition:border-color .2s,background .2s,transform .15s}
+    .btn-email-confirm:hover{border-color:var(--accent);background:var(--accent-dim);transform:scale(1.02)}
+
+    /* ── TRUST / DOUBT SECTION ── */
+    .trust-banner{background:rgba(240,165,0,.06);border:1px solid var(--accent-border);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:2rem;display:flex;align-items:center;gap:12px}
+    .trust-banner-ico{font-size:20px;flex-shrink:0}
+    .trust-banner-text{font-size:12.5px;color:var(--muted);line-height:1.6}
+    .trust-banner-text strong{color:var(--text);font-weight:500}
+    .trust-banner-text a{color:var(--accent);text-decoration:none}
+    .trust-banner-text a:hover{text-decoration:underline}
+    .doubt-section{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.75rem;margin-top:2.5rem}
+    .doubt-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;color:var(--text);margin-bottom:.375rem}
+    .doubt-sub{font-size:13px;color:var(--muted);margin-bottom:1.25rem;line-height:1.6}
+    .doubt-options{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+    .doubt-opt{display:flex;flex-direction:column;align-items:center;gap:8px;padding:1.1rem 1rem;background:var(--bg-3);border:1px solid var(--border);border-radius:var(--r);text-decoration:none;transition:border-color .2s,background .2s,transform .15s;text-align:center;cursor:pointer}
+    .doubt-opt:hover{border-color:var(--border-hi);background:rgba(255,255,255,.03);transform:translateY(-3px)}
+    .doubt-opt-ico{font-size:22px}
+    .doubt-opt-label{font-size:13px;font-weight:500;color:var(--text);font-family:'Space Grotesk',sans-serif}
+    .doubt-opt-desc{font-size:11px;color:var(--muted);line-height:1.4}
+
+    @media(max-width:640px){
+      .proposal-body{grid-template-columns:1fr}
+      .agree-sig-row{grid-template-columns:1fr}
+      .field-row{grid-template-columns:1fr}
+      .tier-grid{grid-template-columns:repeat(2,1fr)}
+      #progress-wrap{padding:.625rem 1rem}
+      .prog-label{display:none}
+      #page-shell{padding:8rem 1.25rem 5rem}
+      .step-actions{padding-bottom:7rem}
+    }
+    @media print{
+      nav,#progress-wrap,#cinematic-overlay,.step-actions,.btn-print,#step-1,#step-3,#step-4,#price-bar,
+      .ambient-glow,.prop-footer-note{display:none!important}
+      body{background:#fff;color:#000}
+      #step-2{display:block!important;animation:none}
+      .proposal-card{border:1.5px solid #ccc;box-shadow:none}
+      .proposal-header{background:#f9f6f0}
+    }
+  </style>
+</head>
+<body>
+
+<!-- AMBIENT BG -->
+<div class="ambient-glow" id="glow-1"></div>
+<div class="ambient-glow" id="glow-2"></div>
+<div class="ambient-glow" id="glow-3"></div>
+
+<!-- CINEMATIC OVERLAY -->
+<div id="cinematic-overlay">
+  <canvas id="warp-canvas"></canvas>
+  <div class="cin-center" id="cin-center">
+    <svg class="cin-flask" width="96" viewBox="0 0 165 160" fill="none" aria-hidden="true">
+      <path class="flq" d="M37,100 L127,100 L142,122 L22,122 Z" fill="#f0a500"/>
+      <path d="M70,28 L94,28 L94,52 L142,122 L22,122 L70,52 Z" stroke="#f0a500" stroke-width="3" stroke-linejoin="round" fill="none"/>
+      <line x1="65" y1="28" x2="99" y2="28" stroke="#f0a500" stroke-width="3" stroke-linecap="round"/>
+      <circle class="fb1" cx="70" cy="116" r="3" fill="#f0a500"/>
+      <circle class="fb2" cx="92" cy="119" r="2.4" fill="#f0a500"/>
+      <circle class="fb3" cx="81" cy="112" r="2" fill="#f0a500"/>
+      <line class="fnn" x1="72" y1="65" x2="92" y2="60" stroke="#f0a500" stroke-width="1.2" opacity=".6"/>
+      <line class="fnn" x1="72" y1="65" x2="82" y2="82" stroke="#f0a500" stroke-width="1.2" opacity=".6"/>
+      <line class="fnn" x1="92" y1="60" x2="82" y2="82" stroke="#f0a500" stroke-width="1.2" opacity=".6"/>
+      <circle cx="72" cy="65" r="3.5" fill="#f0a500"/>
+      <circle cx="92" cy="60" r="3" fill="#f0a500"/>
+      <circle cx="82" cy="82" r="4" fill="#f0a500"/>
+      <path class="fs1" d="M135,26 L137.6,35.4 L147,38 L137.6,40.6 L135,50 L132.4,40.6 L123,38 L132.4,35.4 Z" fill="#f0a500"/>
+      <path class="fs2" d="M28,46 L30,53 L37,55 L30,57 L28,64 L26,57 L19,55 L26,53 Z" fill="#f0a500"/>
+      <path class="fs3" d="M150,75 L151.5,80.5 L157,82 L151.5,83.5 L150,89 L148.5,83.5 L143,82 L148.5,80.5 Z" fill="#f0a500"/>
+    </svg>
+    <div class="cin-text" id="cin-text">Brewing your proposal...</div>
+    <div class="cin-sub" id="cin-sub">Scoping your custom build</div>
+    <div class="cin-dots"><div class="cin-dot"></div><div class="cin-dot"></div><div class="cin-dot"></div></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <svg width="34" height="34" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+      <rect width="100" height="100" rx="20" fill="#f0a500"/>
+      <path d="M42,18 L58,18 L58,32 L82,82 L18,82 L42,32 Z" stroke="#0a0603" stroke-width="5" stroke-linejoin="round" fill="rgba(10,6,3,.18)"/>
+      <line x1="38" y1="18" x2="62" y2="18" stroke="#0a0603" stroke-width="5" stroke-linecap="round"/>
+      <path class="fs1" d="M80,20 L81.3,24.7 L86,26 L81.3,27.3 L80,32 L78.7,27.3 L74,26 L78.7,24.7 Z" fill="#0a0603" opacity=".85"/>
+      <circle cx="48" cy="42" r="2.5" fill="#0a0603" opacity=".8"/>
+      <circle cx="57" cy="39" r="2" fill="#0a0603" opacity=".8"/>
+      <circle cx="53" cy="52" r="3" fill="#0a0603" opacity=".8"/>
+      <line class="fnn" x1="48" y1="42" x2="57" y2="39" stroke="#0a0603" stroke-width=".9" opacity=".4"/>
+      <line class="fnn" x1="48" y1="42" x2="53" y2="52" stroke="#0a0603" stroke-width=".9" opacity=".4"/>
+      <line class="fnn" x1="57" y1="39" x2="53" y2="52" stroke="#0a0603" stroke-width=".9" opacity=".4"/>
+    </svg>
+    <div><div class="nav-logo-name">Jain Labs</div><div class="nav-logo-sub">Start your project</div></div>
+  </a>
+  <a href="index.html" class="nav-back">← Back to home</a>
+</nav>
+
+<!-- PROGRESS -->
+<div id="progress-wrap">
+  <div class="prog-inner">
+    <div class="prog-step active" id="prog-1"><div class="prog-num">1</div><div class="prog-label">Your project</div></div>
+    <div class="prog-line" id="pl-1"></div>
+    <div class="prog-step" id="prog-2"><div class="prog-num">2</div><div class="prog-label">Proposal</div></div>
+    <div class="prog-line" id="pl-2"></div>
+    <div class="prog-step" id="prog-3"><div class="prog-num">3</div><div class="prog-label">Agreement</div></div>
+    <div class="prog-line" id="pl-3"></div>
+    <div class="prog-step" id="prog-4"><div class="prog-num">4</div><div class="prog-label">Confirm</div></div>
+  </div>
+</div>
+
+<!-- LIVE PRICE BAR -->
+<div id="price-bar">
+  <div>
+    <div class="pb-label">Your build estimate</div>
+    <div class="pb-price" id="pb-price">₹4,999</div>
+    <div class="pb-note" id="pb-note">Freelancer · no add-ons</div>
+  </div>
+  <button class="pb-cta" onclick="toStep2()">Generate proposal →</button>
+</div>
+
+<div id="page-shell">
+
+  <!-- ════════ STEP 1 — INTAKE ════════ -->
+  <div class="step-wrap active" id="step-1">
+
+    <div class="step-label-sm">Step 1 of 4</div>
+    <h1 class="step-title">Tell us what <span class="accent">you need.</span></h1>
+    <p class="step-sub">Fill this in once. We do the rest — proposal, agreement, and payment, all in this tab.</p>
+
+    <div class="trust-banner">
+      <div class="trust-banner-ico">💬</div>
+      <div class="trust-banner-text">
+        <strong>This form is designed for clients who've already had a quick chat with us.</strong> If you're still exploring or have questions, <a href="#doubt-section">scroll down</a> — we'd love to talk first before you fill anything in.
+      </div>
+    </div>
+
+    <!-- CHAPTER 1: Who are you -->
+    <div class="chapter">
+      <div class="chapter-header"><div class="chapter-tag">01 — About you</div><div class="chapter-line"></div></div>
+      <div class="cur-toggle">
+        <button class="cur-btn on" id="c-in" onclick="setCur('in')">🇮🇳 INR (₹)</button>
+        <button class="cur-btn" id="c-gl" onclick="setCur('gl')">🌐 USD ($)</button>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <div class="f-label">Your name *</div>
+          <input class="f-input" id="f-name" type="text" placeholder="Priya Sharma" autocomplete="name">
+          <div class="f-err" id="e-name">Please enter your name</div>
+        </div>
+        <div class="field">
+          <div class="f-label">Email address *</div>
+          <input class="f-input" id="f-email" type="email" placeholder="priya@example.com" autocomplete="email">
+          <div class="f-err" id="e-email">Please enter a valid email</div>
+        </div>
+      </div>
+
+      <div class="f-label" style="margin-bottom:.625rem">Preferred contact method</div>
+      <div class="contact-method-tabs">
+        <div class="cm-tab on" id="cm-phone" onclick="setCM('phone')">📞 Phone / WhatsApp</div>
+        <div class="cm-tab" id="cm-user" onclick="setCM('user')">@ WhatsApp username</div>
+        <div class="cm-tab" id="cm-none" onclick="setCM('none')">✉️ Email only</div>
+      </div>
+      <div class="cm-panel show" id="cm-panel-phone">
+        <div class="phone-row">
+          <div class="country-badge" id="country-badge">🇮🇳 +91</div>
+          <div class="field" style="margin-bottom:0">
+            <input class="f-input" id="f-phone" type="tel" placeholder="98765 43210" autocomplete="tel">
+            <div class="f-err" id="e-phone">Enter a valid 10-digit number</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--muted-2);margin-top:6px">India: 10 digits without country code. International: include country code.</div>
+      </div>
+      <div class="cm-panel" id="cm-panel-user">
+        <div class="field" style="margin-bottom:0">
+          <div class="wa-prefix"><span class="prefix">@</span><input class="f-input" id="f-wausername" type="text" placeholder="yourname"></div>
+          <div style="font-size:11px;color:var(--muted-2);margin-top:6px">Your WhatsApp username (without the @). We'll find you using it.</div>
+        </div>
+      </div>
+      <div class="cm-panel" id="cm-panel-none">
+        <div style="font-size:12.5px;color:var(--muted);padding:.5rem 0;line-height:1.6">We'll reply to your email only. Expect a slightly slower response — usually within a few hours.</div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 2: The problem -->
+    <div class="chapter">
+      <div class="chapter-header"><div class="chapter-tag">02 — Your problem</div><div class="chapter-line"></div></div>
+      <div class="field">
+        <div class="f-label">Describe what you need solved *</div>
+        <textarea class="f-textarea" id="f-problem" placeholder="e.g. I run a small grocery store and I can't keep track of daily sales, stock levels, and which items are running low. I need something I can check on my phone every morning and share with my one staff member..."></textarea>
+        <div class="f-err" id="e-problem">Please describe your problem (at least 20 characters)</div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 3: Tier -->
+    <div class="chapter">
+      <div class="chapter-header"><div class="chapter-tag">03 — Choose a tier</div><div class="chapter-line"></div></div>
+      <div class="tier-grid" id="tier-grid">
+        <div class="t-card" data-tier="Student" data-in="1999" data-us="29" data-days="3–4" onclick="selTier(this)">
+          <div class="t-tick">✓</div>
+          <span class="t-card-ico">🎓</span>
+          <div class="t-card-name">Student</div>
+          <div class="t-card-price" id="tp-0">₹1,999</div>
+          <div class="t-card-flag">🪪 ID required</div>
+        </div>
+        <div class="t-card" data-tier="Family" data-in="2999" data-us="49" data-days="3–5" onclick="selTier(this)">
+          <div class="t-tick">✓</div>
+          <span class="t-card-ico">🏠</span>
+          <div class="t-card-name">Family</div>
+          <div class="t-card-price" id="tp-1">₹2,999</div>
+        </div>
+        <div class="t-card sel" data-tier="Freelancer" data-in="4999" data-us="79" data-days="4–6" onclick="selTier(this)">
+          <div class="t-tick">✓</div>
+          <span class="t-card-ico">💼</span>
+          <div class="t-card-name">Freelancer</div>
+          <div class="t-card-price" id="tp-2">₹4,999</div>
+        </div>
+        <div class="t-card" data-tier="Business" data-in="7499" data-us="129" data-days="5–7" onclick="selTier(this)">
+          <div class="t-tick">✓</div>
+          <span class="t-card-ico">🏪</span>
+          <div class="t-card-name">Business</div>
+          <div class="t-card-price" id="tp-3">₹7,499</div>
+        </div>
+        <div class="t-card" data-tier="Enterprise" data-in="14999" data-us="249" data-days="Scoped" onclick="selTier(this)">
+          <div class="t-tick">✓</div>
+          <span class="t-card-ico">🏢</span>
+          <div class="t-card-name">Enterprise</div>
+          <div class="t-card-price" id="tp-4">Custom</div>
+        </div>
+      </div>
+
+      <div id="stu-verify">
+        <label><input type="checkbox" id="stu-check"><span>I confirm I can provide a valid student ID (college ID, enrollment letter, or .edu email) before work begins.</span></label>
+        <div class="v-note">Student pricing is verified during onboarding — this keeps it fair and reserved for actual students.</div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 4: Features -->
+    <div class="chapter">
+      <div class="chapter-header"><div class="chapter-tag">04 — Add features</div><div class="chapter-line"></div></div>
+      <div class="feat-list">
+        <div class="feat-row" data-id="branding" data-in="999" data-us="15" onclick="togFeat(this)">
+          <div class="feat-cb"></div>
+          <div class="feat-info"><div class="feat-name">Custom branding</div><div class="feat-desc">Your colours, fonts, and logo — woven through the whole site</div></div>
+          <div class="feat-price feat-p">+₹999</div>
+        </div>
+        <div class="feat-row" data-id="multiuser" data-in="1499" data-us="25" onclick="togFeat(this)">
+          <div class="feat-cb"></div>
+          <div class="feat-info"><div class="feat-name">Multi-user access</div><div class="feat-desc">Multiple logins, each person sees their own relevant view</div></div>
+          <div class="feat-price feat-p">+₹1,499</div>
+        </div>
+        <div class="feat-row" data-id="export" data-in="699" data-us="12" onclick="togFeat(this)">
+          <div class="feat-cb"></div>
+          <div class="feat-info"><div class="feat-name">Export reports</div><div class="feat-desc">Download your data as CSV or PDF at any time</div></div>
+          <div class="feat-price feat-p">+₹699</div>
+        </div>
+        <div class="feat-row" data-id="integrations" data-in="1999" data-us="30" onclick="togFeat(this)">
+          <div class="feat-cb"></div>
+          <div class="feat-info"><div class="feat-name">Integrations</div><div class="feat-desc">Connect payment gateways, calendars, or other tools you use</div></div>
+          <div class="feat-price feat-p">+₹1,999</div>
+        </div>
+        <div class="feat-row" data-id="priority" data-in="1499" data-us="25" onclick="togFeat(this)">
+          <div class="feat-cb"></div>
+          <div class="feat-info"><div class="feat-name">Priority delivery</div><div class="feat-desc">Move to the front of the queue — delivered within 48 hours</div></div>
+          <div class="feat-price feat-p">+₹1,499</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 5: Deadline & source -->
+    <div class="chapter">
+      <div class="chapter-header"><div class="chapter-tag">05 — Timeline & details</div><div class="chapter-line"></div></div>
+      <div class="field-row">
+        <div class="field">
+          <div class="f-label">Deadline preference</div>
+          <select class="f-select" id="f-deadline" onchange="onDeadlineChange()">
+            <option value="Flexible">Flexible — no rush</option>
+            <option value="Within 2 weeks">Within 2 weeks</option>
+            <option value="Within 1 week">Within 1 week</option>
+            <option value="ASAP">ASAP (within 48 hours)</option>
+          </select>
+          <div id="asap-notice">
+            <strong>Priority delivery fee applies.</strong> Choosing ASAP automatically includes priority delivery (+<span id="asap-price">₹1,499</span>) if not already added above. This is reflected in your proposal.
+          </div>
+        </div>
+        <div class="field">
+          <div class="f-label">How did you find us?</div>
+          <select class="f-select" id="f-source">
+            <option value="">Select one</option>
+            <option value="Instagram">Instagram</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="Referral">Referral from a friend</option>
+            <option value="Jain Studio">Jain Studio website</option>
+            <option value="Google">Google search</option>
+            <option value="WhatsApp">WhatsApp</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="doubt-section" id="doubt-section">
+      <div class="doubt-title">Still unsure? Talk to us first.</div>
+      <div class="doubt-sub">Not sure what tier fits, what features you need, or whether we can even solve your problem? Reach out before filling this in — a quick 10-minute conversation saves everyone time.</div>
+      <div class="doubt-options">
+        <a class="doubt-opt" href="https://wa.me/919909664569?text=Hi%2C%20I%20have%20a%20question%20about%20Jain%20Labs%20before%20starting%20a%20project" target="_blank">
+          <div class="doubt-opt-ico">💬</div>
+          <div class="doubt-opt-label">WhatsApp us</div>
+          <div class="doubt-opt-desc">Fastest reply — usually within minutes.</div>
+        </a>
+        <a class="doubt-opt" href="mailto:hello@jainstudio.in?subject=Question%20about%20Jain%20Labs&body=Hi%2C%20I%20had%20a%20question%20before%20starting%20a%20project..." target="_blank">
+          <div class="doubt-opt-ico">✉️</div>
+          <div class="doubt-opt-label">Send an email</div>
+          <div class="doubt-opt-desc">hello@jainstudio.in · reply within hours.</div>
+        </a>
+        <a class="doubt-opt" href="tel:+919909664569">
+          <div class="doubt-opt-ico">📞</div>
+          <div class="doubt-opt-label">Call us</div>
+          <div class="doubt-opt-desc">+91 XXXXXXXXXX · Mon–Sat, 10am–7pm IST.</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="step-actions">
+      <button class="btn-next" onclick="toStep2()">Generate my proposal →</button>
+    </div>
+  </div>
+
+  <!-- ════════ STEP 2 — PROPOSAL ════════ -->
+  <div class="step-wrap" id="step-2">
+    <div class="step-label-sm">Step 2 of 4</div>
+    <h2 class="step-title">Your <span class="accent">proposal.</span></h2>
+    <p class="step-sub">This is exactly what we'll build, at exactly this price. Nothing added, nothing hidden.</p>
+
+    <div class="proposal-card" id="prop-card">
+      <div class="proposal-header">
+        <div class="prop-badge">Custom build · Jain Labs</div>
+        <div class="prop-title" id="prop-title">Project Proposal</div>
+        <div class="prop-meta">
+          <span>👤 <span id="prop-client">—</span></span>
+          <span>📅 Delivery: <span id="prop-days">—</span></span>
+          <span>🏷️ <span id="prop-tier-lbl">—</span></span>
+        </div>
+      </div>
+      <div class="proposal-body">
+        <div>
+          <div class="prop-sec-title">What we'll build</div>
+          <ul class="prop-list" id="prop-build"></ul>
+        </div>
+        <div>
+          <div class="prop-sec-title">What's included</div>
+          <ul class="prop-list" id="prop-incl"></ul>
+        </div>
+        <div class="price-section">
+          <div class="prop-sec-title">Price breakdown</div>
+          <div id="prop-prices"></div>
+          <div class="advance-note" id="prop-advance-note">
+            Payment: <strong>50% advance</strong> to start → <strong>50% on delivery</strong>. Advance: <strong id="prop-adv-amt">—</strong>. You pay the balance only after you see the final result.
+          </div>
+        </div>
+      </div>
+      <div class="proposal-footer">
+        <div class="prop-footer-note">Valid for 7 days · Currency: <span id="prop-cur-lbl">INR</span></div>
+        <button class="btn-print" onclick="window.print()">⬇ Save / Print</button>
+      </div>
+    </div>
+
+    <div class="step-actions">
+      <button class="btn-next" onclick="toStep3()">Accept this proposal →</button>
+      <button class="btn-back" onclick="goBack(1)">← Edit details</button>
+    </div>
+  </div>
+
+  <!-- ════════ STEP 3 — AGREEMENT ════════ -->
+  <div class="step-wrap" id="step-3">
+    <div class="step-label-sm">Step 3 of 4</div>
+    <h2 class="step-title">Simple <span class="accent">agreement.</span></h2>
+    <p class="step-sub">Six plain-language clauses. Read once, sign once. No legal jargon.</p>
+    <div class="contract-card">
+      <div class="clause"><div class="clause-title"><div class="clause-num">1</div>Scope of work</div><div class="clause-body">Jain Labs will build a custom website as described in the accepted proposal. Features and scope are fixed once the proposal is signed. Any changes beyond that scope are discussed and quoted separately before work continues.</div></div>
+      <div class="clause"><div class="clause-title"><div class="clause-num">2</div>Payment terms</div><div class="clause-body">50% of the agreed total is due as an advance before work begins. The remaining 50% is due on delivery. No work starts until the advance is confirmed by Jain Labs. Payment proof must be shared via WhatsApp or email.</div></div>
+      <div class="clause"><div class="clause-title"><div class="clause-num">3</div>Ownership</div><div class="clause-body">Once final payment is received, the client owns the website and all its contents entirely — code, design, and data. Jain Labs retains no rights, licenses, or access unless separately agreed (e.g. for maintenance).</div></div>
+      <div class="clause"><div class="clause-title"><div class="clause-num">4</div>Revisions & support</div><div class="clause-body">One structured feedback round is included after the midway preview link is shared. Bug fixes within the agreed support window are included. New features or significant redesigns after delivery are quoted separately.</div></div>
+      <div class="clause"><div class="clause-title"><div class="clause-num">5</div>Privacy & confidentiality</div><div class="clause-body">All information shared by the client during this project is confidential. Jain Labs will not share, sell, or use client data for any purpose beyond delivering what was agreed in the proposal.</div></div>
+      <div class="clause"><div class="clause-title"><div class="clause-num">6</div>Cancellation</div><div class="clause-body">If the client cancels after work has begun, the advance payment is non-refundable. Jain Labs may cancel a project and refund in full only if the scope is found technically infeasible after the kickoff call.</div></div>
+    </div>
+    <div class="agree-block">
+      <label class="agree-row"><input type="checkbox" id="agree-check"><span class="agree-text">I have read and agree to all six clauses. I understand the payment terms, scope boundaries, and cancellation policy.</span></label>
+      <div class="agree-sig-row">
+        <div><div class="sig-label">Full name (as signature)</div><input class="f-input" id="sig-name" type="text" placeholder="Your full name"></div>
+        <div><div class="sig-label">Date</div><input class="f-input" id="sig-date" type="text" readonly></div>
+      </div>
+    </div>
+    <div class="step-actions">
+      <button class="btn-next" onclick="toStep4()">Proceed to confirmation →</button>
+      <button class="btn-back" onclick="goBack(2)">← View proposal</button>
+    </div>
+  </div>
+
+  <!-- ════════ STEP 4 — CONFIRM & REQUEST PAYMENT LINK ════════ -->
+  <div class="step-wrap" id="step-4">
+    <div class="step-label-sm">Step 4 of 4</div>
+    <h2 class="step-title">You're <span class="accent">all set.</span></h2>
+    <p class="step-sub">Your build slot is reserved. We'll send you a secure payment link directly — never over a public page.</p>
+
+    <div class="slot-card">
+      <span class="slot-icon">🔒</span>
+      <div class="slot-title">Build slot reserved</div>
+      <div class="slot-sub">Your project details and signed agreement are on file. The next step is a private payment link — sent to you personally via WhatsApp or email within the hour.</div>
+    </div>
+
+    <div class="slot-detail-card">
+      <div class="slot-detail-row"><span class="lbl">Project</span><span class="val" id="conf-title">—</span></div>
+      <div class="slot-detail-row"><span class="lbl">Tier</span><span class="val" id="conf-tier">—</span></div>
+      <div class="slot-detail-row"><span class="lbl">Total</span><span class="val accent" id="conf-total">—</span></div>
+      <div class="slot-detail-row"><span class="lbl">Advance due (50%)</span><span class="val accent" id="conf-adv">—</span></div>
+      <div class="slot-detail-row"><span class="lbl">Delivery</span><span class="val" id="conf-days">—</span></div>
+    </div>
+
+    <div class="process-steps">
+      <div class="proc-step done"><div class="proc-num">✓</div><div><div class="proc-title">Form submitted</div><div class="proc-sub">Your project details are recorded</div></div></div>
+      <div class="proc-step done"><div class="proc-num">✓</div><div><div class="proc-title">Proposal accepted</div><div class="proc-sub">Scope and price are agreed</div></div></div>
+      <div class="proc-step done"><div class="proc-num">✓</div><div><div class="proc-title">Agreement signed</div><div class="proc-sub">Terms accepted, slot reserved</div></div></div>
+      <div class="proc-step"><div class="proc-num">4</div><div><div class="proc-title">Receive your secure payment link</div><div class="proc-sub">Sent privately via WhatsApp or email within 1 hour of your confirmation below</div></div></div>
+      <div class="proc-step"><div class="proc-num">5</div><div><div class="proc-title">Pay advance & we start building</div><div class="proc-sub">Day 1 begins. Preview link sent midway through.</div></div></div>
+    </div>
+
+    <div class="security-note">
+      <span class="ico">🛡️</span>
+      <span>We never display payment details (UPI IDs, bank accounts, or card links) on public pages. Your payment link is generated and sent to you personally — this protects both of us from fraud and interception.</span>
+    </div>
+
+    <div class="step-actions">
+      <a href="#" class="btn-whatsapp" id="final-wa-btn" onclick="sendFinalWA(event)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Confirm via WhatsApp
+      </a>
+      <a href="#" class="btn-email-confirm" id="final-email-btn" onclick="sendFinalEmail(event)">
+        ✉️ Confirm via Email
+      </a>
+      <button class="btn-back" onclick="goBack(3)">← Back to agreement</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ═══ STATE ═══ */
+let cur = 'in';
+let contactMethod = 'phone';
+let selTierEl = document.querySelector('.t-card.sel');
+let currentStep = 1;
+let _quote = {};
+
+/* ═══ CURRENCY ═══ */
+function setCur(c) {
+  cur = c;
+  ['in','gl'].forEach(x => document.getElementById('c-'+x).classList.toggle('on', x===c));
+  const sym = c==='in'?'₹':'$', loc = c==='in'?'en-IN':'en-US';
+  document.querySelectorAll('.t-card').forEach(el => {
+    const v = parseInt(el.dataset[c==='in'?'in':'us'],10);
+    el.querySelector('.t-card-price').textContent = el.dataset.tier==='Enterprise' ? 'Custom' : sym+v.toLocaleString(loc);
+  });
+  document.querySelectorAll('.feat-row').forEach(el => {
+    el.querySelector('.feat-p').textContent = '+'+sym+parseInt(el.dataset[c==='in'?'in':'us'],10).toLocaleString(loc);
+  });
+  document.getElementById('asap-price').textContent = c==='in'?'₹1,499':'$25';
+  document.getElementById('country-badge').textContent = c==='in'?'🇮🇳 +91':'🌐';
+  updatePriceBar();
+}
+
+/* ═══ CONTACT METHOD ═══ */
+function setCM(m) {
+  contactMethod = m;
+  ['phone','user','none'].forEach(x => {
+    document.getElementById('cm-'+x).classList.toggle('on', x===m);
+    document.getElementById('cm-panel-'+x).classList.toggle('show', x===m);
+  });
+}
+
+/* ═══ TIER ═══ */
+function selTier(el) {
+  document.querySelectorAll('.t-card').forEach(t=>t.classList.remove('sel'));
+  el.classList.add('sel'); selTierEl = el;
+  document.getElementById('stu-verify').style.display = el.dataset.tier==='Student' ? 'block' : 'none';
+  updatePriceBar();
+}
+
+/* ═══ FEATURES ═══ */
+function togFeat(el) {
+  el.classList.toggle('sel');
+  el.querySelector('.feat-cb').textContent = el.classList.contains('sel') ? '✓' : '';
+  updatePriceBar();
+}
+
+/* ═══ DEADLINE / ASAP ═══ */
+function onDeadlineChange() {
+  const isASAP = document.getElementById('f-deadline').value === 'ASAP';
+  document.getElementById('asap-notice').style.display = isASAP ? 'block' : 'none';
+  updatePriceBar();
+}
+
+/* ═══ PRICE BAR ═══ */
+function calcTotal() {
+  const key = cur==='in'?'in':'us';
+  const activeTierC = document.querySelector('.t-card.sel') || selTierEl;
+  const base = activeTierC.dataset.tier==='Enterprise' ? (cur==='in'?14999:249) : parseInt(activeTierC.dataset[key],10);
+  const feats = Array.from(document.querySelectorAll('.feat-row.sel'));
+  const featTotal = feats.reduce((s,f)=>s+parseInt(f.dataset[key],10),0);
+  const isASAP = document.getElementById('f-deadline').value==='ASAP';
+  const hasPriority = document.querySelector('.feat-row[data-id="priority"].sel');
+  const asapFee = isASAP && !hasPriority ? (cur==='in'?1499:25) : 0;
+  return { base, featTotal, asapFee, total: base+featTotal+asapFee, feats };
+}
+
+function updatePriceBar() {
+  const {total, feats} = calcTotal();
+  const sym = cur==='in'?'₹':'$', loc = cur==='in'?'en-IN':'en-US';
+  document.getElementById('pb-price').textContent = sym+total.toLocaleString(loc);
+  const tierName = selTierEl.dataset.tier;
+  const featCount = feats.length + (document.getElementById('f-deadline').value==='ASAP'&&!document.querySelector('.feat-row[data-id="priority"].sel')?1:0);
+  document.getElementById('pb-note').textContent = tierName + (featCount?' · '+featCount+' add-on'+(featCount>1?'s':''):'');
+  document.getElementById('price-bar').classList.toggle('show', currentStep===1);
+}
+
+/* ═══ WARP ANIMATION ═══ */
+function warpTransition(messages, cb) {
+  const overlay = document.getElementById('cinematic-overlay');
+  const canvas  = document.getElementById('warp-canvas');
+  const textEl  = document.getElementById('cin-text');
+  const subEl   = document.getElementById('cin-sub');
+  const W = canvas.width  = window.innerWidth;
+  const H = canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const cx = W/2, cy = H/2;
+
+  const STARS = 260;
+  const stars = Array.from({length:STARS}, ()=>({
+    angle: Math.random()*Math.PI*2,
+    dist: Math.random()*80 + 5,
+    speed: 0.8 + Math.random()*2.5,
+    size: 0.6 + Math.random()*1.8,
+    tail: 0,
+    hue: Math.random() > 0.7 ? 38 : 0,
+  }));
+
+  overlay.classList.add('visible');
+  textEl.textContent = messages[0][0]; subEl.textContent = messages[0][1];
+
+  let msgIdx = 0;
+  const msgTimer = setInterval(()=>{
+    msgIdx++;
+    if(msgIdx<messages.length){
+      textEl.style.opacity=0; subEl.style.opacity=0;
+      setTimeout(()=>{ textEl.textContent=messages[msgIdx][0]; subEl.textContent=messages[msgIdx][1]; textEl.style.opacity=1; subEl.style.opacity=1; },260);
+    }
+  }, 820);
+
+  const totalDur = messages.length*840 + 400;
+  const startT = performance.now();
+
+  function frame(now) {
+    const elapsed = now - startT;
+    const t = Math.min(elapsed/totalDur, 1);
+    const ease = t<0.5 ? 2*t*t : -1+(4-2*t)*t;
+    const speed = 1 + ease*18;
+    const maxDist = Math.hypot(W,H)*0.65;
+
+    ctx.fillStyle = 'rgba(6,6,6,0.18)';
+    ctx.fillRect(0,0,W,H);
+
+    stars.forEach(s => {
+      const prevDist = s.dist;
+      s.dist += s.speed * speed;
+      if(s.dist > maxDist){ s.dist=Math.random()*40+5; s.angle=Math.random()*Math.PI*2; }
+
+      const x1 = cx + Math.cos(s.angle)*prevDist;
+      const y1 = cy + Math.sin(s.angle)*prevDist;
+      const x2 = cx + Math.cos(s.angle)*s.dist;
+      const y2 = cy + Math.sin(s.angle)*s.dist;
+      const op = Math.min(1, s.dist/80) * (0.3 + ease*0.6);
+
+      ctx.beginPath();
+      ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
+      ctx.strokeStyle = s.hue===38
+        ? `rgba(240,165,0,${op})`
+        : `rgba(240,220,180,${op*0.6})`;
+      ctx.lineWidth = s.size * (1 + ease);
+      ctx.stroke();
+    });
+
+    /* center amber glow */
+    const glowR = 60 + ease*80;
+    const grd = ctx.createRadialGradient(cx,cy,0,cx,cy,glowR);
+    grd.addColorStop(0,`rgba(240,165,0,${0.25*(1-ease*0.5)})`);
+    grd.addColorStop(0.5,`rgba(240,165,0,${0.08*(1-ease*0.3)})`);
+    grd.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=grd; ctx.fillRect(0,0,W,H);
+
+    if(t<1) requestAnimationFrame(frame);
+    else {
+      clearInterval(msgTimer);
+      ctx.clearRect(0,0,W,H);
+      overlay.classList.remove('visible');
+      cb();
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+/* Shockwave for accept-proposal */
+function shockwaveTransition(messages, cb) {
+  const overlay = document.getElementById('cinematic-overlay');
+  const textEl  = document.getElementById('cin-text');
+  const subEl   = document.getElementById('cin-sub');
+
+  overlay.classList.add('visible');
+  textEl.textContent = messages[0][0]; subEl.textContent = messages[0][1];
+
+  /* spawn shockwaves */
+  for(let i=0;i<3;i++){
+    const sw = document.createElement('div');
+    sw.className = 'shockwave shockwave'+(i+1);
+    document.getElementById('cin-center').appendChild(sw);
+    setTimeout(()=>sw.remove(), 1000);
+  }
+
+  const msgTimer = setInterval(()=>{
+    textEl.style.opacity=0; subEl.style.opacity=0;
+    setTimeout(()=>{ textEl.textContent=messages[1]?messages[1][0]:messages[0][0]; subEl.textContent=messages[1]?messages[1][1]:messages[0][1]; textEl.style.opacity=1; subEl.style.opacity=1; },260);
+  },800);
+
+  setTimeout(()=>{ clearInterval(msgTimer); overlay.classList.remove('visible'); cb(); }, 1600);
+}
+
+/* ═══ VALIDATION ═══ */
+function validateStep1() {
+  let ok = true;
+  const clearFld = (id,eid) => { document.getElementById(id).classList.remove('err'); document.getElementById(eid).classList.remove('show'); };
+  const errFld   = (id,eid) => { document.getElementById(id).classList.add('err'); document.getElementById(eid).classList.add('show'); ok=false; };
+
+  clearFld('f-name','e-name'); clearFld('f-email','e-email'); clearFld('f-problem','e-problem');
+  if(!document.getElementById('f-name').value.trim()) errFld('f-name','e-name');
+  if(!document.getElementById('f-email').value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) errFld('f-email','e-email');
+  if(document.getElementById('f-problem').value.trim().length<20) errFld('f-problem','e-problem');
+
+  /* phone validation */
+  if(contactMethod==='phone'){
+    const ph = document.getElementById('f-phone').value.replace(/\s/g,'');
+    const isIndia = cur==='in';
+    const valid = isIndia ? /^\d{10}$/.test(ph) : ph.length>=7;
+    document.getElementById('f-phone').classList.remove('err'); document.getElementById('e-phone').classList.remove('show');
+    if(ph && !valid){ document.getElementById('f-phone').classList.add('err'); document.getElementById('e-phone').classList.add('show'); ok=false; }
+  }
+
+  /* student gate */
+  if(selTierEl.dataset.tier==='Student' && !document.getElementById('stu-check').checked){
+    const v = document.getElementById('stu-verify');
+    v.style.animation='none'; void v.offsetWidth; v.style.animation='shake-x .4s'; ok=false;
+  }
+  if(!ok) window.scrollTo({top:0,behavior:'smooth'});
+  return ok;
+}
+
+function validateStep3() {
+  if(!document.getElementById('agree-check').checked){
+    const b=document.querySelector('.agree-block'); b.style.animation='none'; void b.offsetWidth; b.style.animation='shake-x .4s'; return false;
+  }
+  if(!document.getElementById('sig-name').value.trim()){
+    document.getElementById('sig-name').classList.add('err'); document.getElementById('sig-name').focus(); return false;
+  }
+  return true;
+}
+
+/* ═══ PROGRESS ═══ */
+function setProgress(s) {
+  for(let i=1;i<=4;i++){
+    const el=document.getElementById('prog-'+i);
+    el.classList.remove('active','done');
+    if(i<s) el.classList.add('done'); else if(i===s) el.classList.add('active');
+  }
+  for(let i=1;i<=3;i++) document.getElementById('pl-'+i).style.background = i<s?'var(--accent)':'var(--border)';
+}
+
+function showStep(n) {
+  document.querySelectorAll('.step-wrap').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step-'+n).classList.add('active');
+  setProgress(n); currentStep=n;
+  document.getElementById('price-bar').classList.toggle('show', n===1);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goBack(n){ showStep(n); }
+
+/* ═══ PROPOSAL BUILDER ═══ */
+function buildProposal() {
+  const name = document.getElementById('f-name').value.trim();
+  const activeTierCard = document.querySelector('.t-card.sel') || selTierEl;
+  const tier = activeTierCard.dataset.tier;
+  const days = activeTierCard.dataset.days;
+  const sym  = cur==='in'?'₹':'$';
+  const loc  = cur==='in'?'en-IN':'en-US';
+  const {base,featTotal,asapFee,total,feats} = calcTotal();
+
+  /* support window per tier */
+  const support = {Student:'7',Family:'7',Freelancer:'14',Business:'30',Enterprise:'Dedicated'}[tier];
+
+  /* "what we'll build" — only confirmed items */
+  const buildItems = ['A custom website built around your described problem'];
+  feats.forEach(f=>{
+    const nm = f.dataset.id;
+    if(nm==='branding') buildItems.push('Custom colours, fonts, and logo integration');
+    if(nm==='multiuser') buildItems.push('Multi-user login system with individual views');
+    if(nm==='export') buildItems.push('Data export functionality (CSV and PDF)');
+    if(nm==='integrations') buildItems.push('Integration with third-party tool(s) you specified');
+    if(nm==='priority') buildItems.push('Priority delivery — ready within 48 hours');
+  });
+  if(asapFee>0) buildItems.push('Priority delivery (ASAP — added for your deadline)');
+  buildItems.push('Mobile-responsive layout — works on any device');
+
+  /* "what's included" — conservative, exactly these */
+  const inclItems = [
+    'One-time build — full ownership on delivery, no subscriptions',
+    'Live preview link shared at ~50% completion for your feedback',
+    support+' days bug-fix support after delivery',
+    'Walkthrough video on handover so you can use it confidently',
+  ];
+  if(tier==='Enterprise') { inclItems[2]='Dedicated ongoing support plan'; inclItems.push('Kickoff call to align scope before build begins'); }
+
+  /* price rows */
+  let priceHTML = `<div class="price-row"><span class="price-lbl">${tier} base</span><span class="price-val">${sym}${base.toLocaleString(loc)}</span></div>`;
+  feats.forEach(f=>{
+    const amt=parseInt(f.dataset[cur==='in'?'in':'us'],10);
+    priceHTML+=`<div class="price-row"><span class="price-lbl">+ ${f.querySelector('.feat-name').textContent}</span><span class="price-val">${sym}${amt.toLocaleString(loc)}</span></div>`;
+  });
+  if(asapFee>0) priceHTML+=`<div class="price-row"><span class="price-lbl">+ Priority delivery (ASAP)</span><span class="price-val">${sym}${asapFee.toLocaleString(loc)}</span></div>`;
+  priceHTML+=`<div class="price-row"><span class="price-total-lbl">Total (one-time)</span><span class="price-total-val">${sym}${total.toLocaleString(loc)}</span></div>`;
+
+  const adv = Math.ceil(total*0.5);
+
+  /* delivery display — merge tier days with deadline preference */
+  const deadlinePref = document.getElementById('f-deadline').value;
+  let deliveryDisplay;
+  if (deadlinePref === 'ASAP') {
+    deliveryDisplay = '48 hrs · Priority delivery';
+  } else if (deadlinePref === 'Within 1 week') {
+    deliveryDisplay = 'Within 1 week (expedited)';
+  } else if (deadlinePref === 'Within 2 weeks') {
+    deliveryDisplay = 'Within 2 weeks';
+  } else {
+    /* Flexible — use tier-based standard window */
+    deliveryDisplay = tier === 'Enterprise' ? days : days + ' days (standard)';
+  }
+
+  /* populate DOM */
+  document.getElementById('prop-title').textContent   = name+"'s "+tier+" Build";
+  document.getElementById('prop-client').textContent   = name;
+  document.getElementById('prop-days').textContent     = deliveryDisplay;
+  document.getElementById('prop-tier-lbl').textContent = tier+' tier';
+  document.getElementById('prop-cur-lbl').textContent  = cur==='in'?'INR':'USD';
+  document.getElementById('prop-build').innerHTML      = buildItems.map(i=>`<li class="highlight">${i}</li>`).join('');
+  document.getElementById('prop-incl').innerHTML       = inclItems.map(i=>`<li class="incl">${i}</li>`).join('');
+  document.getElementById('prop-prices').innerHTML     = priceHTML;
+  document.getElementById('prop-adv-amt').textContent  = sym+adv.toLocaleString(loc);
+  document.getElementById('prop-advance-note').querySelector('#prop-adv-amt').textContent = sym+adv.toLocaleString(loc);
+
+  /* stash for later steps */
+  _quote = { name, tier, days: deliveryDisplay, sym, loc, total, adv, feats: feats.map(f=>f.querySelector('.feat-name').textContent), deadline: deadlinePref, asapFee };
+}
+
+/* ═══ PAYMENT CONFIRM ═══ */
+function populateConfirm() {
+  document.getElementById('conf-title').textContent = _quote.name+"'s "+_quote.tier+" Build";
+  document.getElementById('conf-tier').textContent  = _quote.tier;
+  document.getElementById('conf-total').textContent = _quote.sym+_quote.total.toLocaleString(_quote.loc);
+  document.getElementById('conf-adv').textContent   = _quote.sym+_quote.adv.toLocaleString(_quote.loc);
+  document.getElementById('conf-days').textContent  = _quote.days;
+}
+
+/* ═══ WHATSAPP / EMAIL FINAL ═══ */
+function buildFinalMsg() {
+  let contact = '';
+  if(contactMethod==='phone') contact = 'Phone: '+document.getElementById('f-phone').value;
+  else if(contactMethod==='user') contact = 'WA username: @'+document.getElementById('f-wausername').value;
+  else contact = 'Email only — '+document.getElementById('f-email').value;
+  let msg = "Hi Jain Labs! I've completed the onboarding for my project.\n\n";
+  msg += "Name: "+_quote.name+"\nEmail: "+document.getElementById('f-email').value+"\nContact: "+contact+"\n";
+  msg += "Tier: "+_quote.tier+"\n";
+  if(_quote.feats.length) msg += "Add-ons: "+_quote.feats.join(', ')+"\n";
+  if(_quote.asapFee>0) msg += "Deadline: ASAP (priority delivery included)\n";
+  msg += "Total: "+_quote.sym+_quote.total.toLocaleString(_quote.loc)+"\n";
+  msg += "Advance: "+_quote.sym+_quote.adv.toLocaleString(_quote.loc)+"\n\n";
+  msg += "I've reviewed the proposal and signed the agreement. Please send me the secure payment link. Thank you!";
+  return msg;
+}
+
+function sendFinalWA(e){
+  e.preventDefault();
+  window.open('https://wa.me/919909664569?text='+encodeURIComponent(buildFinalMsg()),'_blank');
+}
+
+function sendFinalEmail(e){
+  e.preventDefault();
+  const subject = encodeURIComponent("Jain Labs Project Confirmation — "+_quote.name);
+  const body    = encodeURIComponent(buildFinalMsg());
+  window.open('mailto:hello@jainstudio.in?subject='+subject+'&body='+body);
+}
+
+/* ═══ STEP NAVIGATION ═══ */
+function toStep2(){
+  if(!validateStep1()) return;
+  warpTransition([
+    ['Brewing your proposal...','Scoping your custom build'],
+    ['Calculating the price...','Adding up your selections'],
+    ['Almost ready...','Putting the final touches'],
+  ], ()=>{ buildProposal(); showStep(2); });
+}
+
+function toStep3(){
+  shockwaveTransition([
+    ['Proposal accepted!','Loading your agreement...'],
+    ['One last step...','Sign off and we\'re good to go'],
+  ], ()=>{
+    document.getElementById('sig-name').value = document.getElementById('f-name').value.trim();
+    document.getElementById('sig-date').value  = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+    showStep(3);
+  });
+}
+
+function toStep4(){
+  if(!validateStep3()) return;
+  warpTransition([
+    ['Locking your build slot...','Securing your place in the queue'],
+  ], ()=>{ populateConfirm(); showStep(4); });
+}
+
+/* ═══ INIT ═══ */
+updatePriceBar();
+document.getElementById('sig-date').value = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+</script>
+</body>
+</html>

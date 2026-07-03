@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Jain Labs services and pricing — build your custom quote, compare plans, and see exactly what's included. AI-powered websites for every problem.">
+  <title>Services & Pricing — Jain Labs</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #060606;
+      --bg-2:         #0d0d0d;
+      --bg-3:         #161616;
+      --border:       rgba(255,255,255,0.07);
+      --border-hi:    rgba(255,255,255,0.15);
+      --text:         #f0ede8;
+      --muted:        #888;
+      --muted-2:      #444;
+      --accent:       #f0a500;
+      --accent-hi:    #ffc13d;
+      --accent-dim:   rgba(240,165,0,0.12);
+      --accent-border:rgba(240,165,0,0.22);
+      --r-sm: 8px; --r: 12px; --r-lg: 20px;
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 16px; line-height: 1.6; overflow-x: hidden; }
+    h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.025em; line-height: 1.1; }
+    ::selection { background: rgba(240,165,0,0.22); color: var(--text); }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: 4px; }
+    @keyframes shake-x { 0%,100%{transform:translateX(0)} 18%{transform:translateX(-7px)} 36%{transform:translateX(7px)} 54%{transform:translateX(-5px)} 72%{transform:translateX(4px)} 88%{transform:translateX(-2px)} }
+
+    #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+    nav, main, footer { position: relative; z-index: 1; }
+
+    /* ===== NAV (shared with homepage) ===== */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; transition: background 0.35s, border-bottom 0.35s; }
+    nav.scrolled { background: rgba(6,6,6,0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo-info { display: flex; flex-direction: column; gap: 1px; }
+    .nav-logo-name { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; color: var(--text); letter-spacing: -0.03em; }
+    .nav-logo-sub { font-size: 10px; color: var(--muted-2); font-family: 'Inter', sans-serif; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links .nav-cta { background: var(--accent); color: #000 !important; padding: 8px 20px; border-radius: 99px; font-weight: 600; font-family: 'Space Grotesk', sans-serif; transition: background 0.2s, transform 0.15s; }
+    .nav-links .nav-cta:hover { background: var(--accent-hi); transform: scale(1.03); }
+    .nav-toggle { display: none; background: none; border: 1px solid var(--border); color: var(--text); width: 38px; height: 38px; border-radius: var(--r-sm); cursor: pointer; font-size: 18px; align-items: center; justify-content: center; }
+
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.75s ease, transform 0.75s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; } .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.32s; } .reveal-delay-4 { transition-delay: 0.44s; }
+
+    section { padding: 6rem 2rem; scroll-margin-top: 72px; }
+    .max-w { max-width: 1100px; margin: 0 auto; }
+    .sec-label { font-size: 11px; color: var(--accent); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; font-family: 'Space Grotesk', sans-serif; margin-bottom: .6rem; }
+    .sec-title { font-size: clamp(2rem, 5vw, 3.25rem); font-weight: 700; color: var(--text); margin-bottom: .875rem; }
+    .sec-sub { font-size: 1.05rem; color: var(--muted); font-weight: 300; line-height: 1.75; max-width: 480px; }
+
+    /* ===== PAGE HERO ===== */
+    #phero { min-height: 62vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 9rem 1.5rem 4rem; }
+    .phero-badge { display: inline-flex; align-items: center; gap: 7px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 5px 15px; border-radius: 99px; font-size: 12px; font-weight: 500; font-family: 'Space Grotesk', sans-serif; margin-bottom: 1.75rem; opacity: 0; animation: fadeUp 0.8s 0.2s forwards; }
+    .badge-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulseDot 2.2s infinite; }
+    @keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(.7)} }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    .phero-title { font-size: clamp(2.5rem, 6.5vw, 4.5rem); font-weight: 700; color: var(--text); letter-spacing: -0.04em; line-height: 1.05; margin-bottom: 1.25rem; max-width: 760px; opacity: 0; animation: fadeUp 0.9s 0.35s forwards; }
+    .phero-title .accent { color: var(--accent); }
+    .phero-sub { font-size: clamp(.95rem, 2vw, 1.15rem); color: var(--muted); max-width: 520px; font-weight: 300; line-height: 1.75; opacity: 0; animation: fadeUp 0.9s 0.5s forwards; }
+
+    /* ===== SERVICE CATEGORIES ===== */
+    #categories { background: var(--bg-2); }
+    .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+    .cat-card { background: var(--bg-3); border: 1px solid var(--border); border-radius: var(--r); padding: 1.5rem; transition: border-color .25s, transform .25s; }
+    .cat-card:hover { border-color: var(--border-hi); transform: translateY(-4px); }
+    .cat-icon { width: 44px; height: 44px; border-radius: 11px; background: var(--accent-dim); display: flex; align-items: center; justify-content: center; font-size: 21px; margin-bottom: 1.1rem; }
+    .cat-name { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: .5rem; }
+    .cat-desc { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 1rem; }
+    .cat-examples { display: flex; flex-wrap: wrap; gap: 6px; }
+    .cat-ex { font-size: 11px; color: var(--muted); background: var(--bg); border: 1px solid var(--border); padding: 3px 10px; border-radius: 99px; }
+
+    /* ===== HOW PRICING WORKS ===== */
+    #how-pricing { background: var(--bg); }
+    .hp-steps { display: grid; grid-template-columns: 1fr 28px 1fr 28px 1fr; align-items: start; max-width: 860px; margin: 0 auto; }
+    .hp-step { text-align: center; padding: 0 1rem; }
+    .hp-num { width: 50px; height: 50px; border: 1.5px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); margin: 0 auto 1.1rem; }
+    .hp-step-title { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: .4rem; }
+    .hp-step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .hp-arrow { padding-top: 16px; color: var(--accent); font-size: 16px; opacity: .3; text-align: center; }
+
+    /* ===== CALCULATOR — SIGNATURE ELEMENT ===== */
+    #calculator { background: var(--bg-2); }
+    .calc-shell { display: grid; grid-template-columns: 1.4fr 1fr; gap: 28px; align-items: start; }
+    .calc-panel { background: var(--bg-3); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.75rem; }
+    .calc-block { margin-bottom: 1.75rem; }
+    .calc-block:last-child { margin-bottom: 0; }
+    .calc-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .09em; font-weight: 600; font-family: 'Space Grotesk', sans-serif; margin-bottom: .75rem; display: flex; align-items: center; justify-content: space-between; }
+    .calc-tiers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .calc-tier { background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--r-sm); padding: .875rem .5rem; text-align: center; cursor: pointer; transition: border-color .2s, background .2s, transform .15s; }
+    .calc-tier:hover { border-color: var(--border-hi); }
+    .calc-tier.sel { border-color: var(--accent); background: var(--accent-dim); transform: translateY(-2px); }
+    .calc-tier-name { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); }
+    .calc-tier-price { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .calc-tier.sel .calc-tier-price { color: var(--accent); }
+    .calc-tier-flag { font-size: 9.5px; color: var(--muted-2); margin-top: 4px; line-height: 1.3; }
+    .calc-tier.sel .calc-tier-flag { color: var(--accent); opacity: .85; }
+    .calc-feats { display: flex; flex-direction: column; gap: 8px; }
+    .calc-feat { display: flex; align-items: center; gap: 11px; padding: .7rem .875rem; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-sm); cursor: pointer; transition: border-color .2s, background .2s; }
+    .calc-feat:hover { border-color: var(--border-hi); }
+    .calc-feat.sel { border-color: var(--accent-border); background: var(--accent-dim); }
+    .calc-feat-box { width: 19px; height: 19px; border-radius: 6px; border: 1.5px solid var(--muted-2); display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; color: #000; transition: background .2s, border-color .2s; }
+    .calc-feat.sel .calc-feat-box { background: var(--accent); border-color: var(--accent); font-weight: 700; }
+    .calc-feat-info { flex: 1; }
+    .calc-feat-name { font-size: 13.5px; color: var(--text); font-weight: 500; }
+    .calc-feat-desc { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+    .calc-feat-price { font-size: 12.5px; color: var(--muted); font-family: 'Space Grotesk', sans-serif; flex-shrink: 0; }
+    .calc-feat.sel .calc-feat-price { color: var(--accent); }
+
+    .calc-toggle { display: inline-flex; background: var(--bg); border: 1px solid var(--border); border-radius: 99px; padding: 3px; }
+    .calc-tog-btn { background: transparent; border: none; color: var(--muted); font-size: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 500; padding: 5px 13px; border-radius: 99px; cursor: pointer; transition: background .25s, color .25s; }
+    .calc-tog-btn.on { background: var(--accent); color: #000; }
+
+    /* Result panel (sticky-ish) */
+    .calc-result { background: var(--bg-3); border: 1px solid var(--accent-border); border-radius: var(--r-lg); padding: 1.75rem; position: sticky; top: 92px; overflow: hidden; }
+    .calc-result::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse at top right, rgba(240,165,0,.08) 0%, transparent 65%); pointer-events:none; }
+    .calc-flask-row { display: flex; align-items: center; gap: 1.1rem; margin-bottom: 1.5rem; position: relative; }
+    .flask-fill-shell { position: relative; width: 56px; height: 64px; flex-shrink: 0; }
+    .flask-liquid { position: absolute; left: 6px; right: 6px; bottom: 6px; background: linear-gradient(180deg, var(--accent-hi), var(--accent)); border-radius: 0 0 6px 6px; height: 4%; transition: height .65s cubic-bezier(.23,1,.32,1); }
+    .calc-total-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-family: 'Space Grotesk', sans-serif; font-weight: 600; }
+    .calc-total-num { font-family: 'Space Grotesk', sans-serif; font-size: 2.1rem; font-weight: 700; color: var(--text); letter-spacing: -0.03em; margin-top: 2px; }
+    .calc-summary { list-style: none; display: flex; flex-direction: column; gap: 7px; margin-bottom: 1.5rem; position: relative; }
+    .calc-summary li { font-size: 12.5px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+    .calc-summary li .nm { color: var(--text); }
+    .calc-summary-empty { font-size: 12.5px; color: var(--muted-2); font-style: italic; }
+    .calc-cta { display: block; width: 100%; text-align: center; background: var(--accent); color: #000; border: none; padding: 13px; border-radius: 99px; font-size: 14px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; cursor: pointer; text-decoration: none; transition: background .2s, transform .15s; position: relative; }
+    .calc-cta:hover { background: var(--accent-hi); transform: scale(1.02); }
+    .calc-cta.disabled { opacity: .4; pointer-events: none; }
+    .calc-note { font-size: 11px; color: var(--muted-2); text-align: center; margin-top: .75rem; position: relative; }
+
+    .calc-verify { background: rgba(240,165,0,.06); border: 1px solid var(--accent-border); border-radius: var(--r-sm); padding: .875rem 1rem; margin-bottom: 1.1rem; position: relative; }
+    .calc-verify-label { display: flex; align-items: flex-start; gap: 9px; cursor: pointer; font-size: 12px; color: var(--text); line-height: 1.55; }
+    .calc-verify-label input { margin-top: 2px; accent-color: var(--accent); width: 15px; height: 15px; flex-shrink: 0; cursor: pointer; }
+    .calc-verify-hint { font-size: 11px; color: var(--muted); margin-top: 6px; padding-left: 24px; }
+
+    /* ===== COMPARISON TABLE ===== */
+    #compare { background: var(--bg); }
+    .cmp-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .cmp-table { width: 100%; min-width: 640px; border-collapse: collapse; }
+    .cmp-table th, .cmp-table td { padding: 13px 14px; text-align: left; font-size: 13px; border-bottom: 1px solid var(--border); }
+    .cmp-table thead th { font-family: 'Space Grotesk', sans-serif; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; border-bottom: 1px solid var(--border-hi); }
+    .cmp-table thead th.tier-h { color: var(--text); font-size: 13.5px; text-transform: none; letter-spacing: 0; }
+    .cmp-table tbody td:first-child { color: var(--muted); }
+    .cmp-table tbody tr:last-child td { border-bottom: none; }
+    .cmp-yes { color: var(--accent); font-weight: 600; }
+    .cmp-no { color: var(--muted-2); }
+
+    /* ===== FAQ ===== */
+    #faq { background: var(--bg-2); }
+    .faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+    .faq-item { background: var(--bg-3); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+    .faq-q { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.1rem 1.4rem; cursor: pointer; }
+    .faq-q-text { font-family: 'Space Grotesk', sans-serif; font-size: 14.5px; font-weight: 500; color: var(--text); }
+    .faq-chevron { color: var(--accent); font-size: 13px; flex-shrink: 0; transition: transform .3s; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+    .faq-a-wrap { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+    .faq-item.open .faq-a-wrap { max-height: 220px; }
+    .faq-a { padding: 0 1.4rem 1.2rem; font-size: 13.5px; color: var(--muted); line-height: 1.7; }
+
+    /* ===== FINAL CTA ===== */
+    #final-cta { background: var(--bg-2); text-align: center; padding: 7rem 2rem; }
+    .final-title { font-size: clamp(2.25rem, 6vw, 4rem); font-weight: 700; color: var(--text); letter-spacing: -0.04em; margin-bottom: 1rem; line-height: 1.05; }
+    .final-title .accent { color: var(--accent); }
+    .final-sub { font-size: 1.05rem; color: var(--muted); font-weight: 300; margin-bottom: 2.25rem; }
+    .final-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary { background: var(--accent); color: #000; border: none; padding: 14px 34px; border-radius: 99px; font-size: 15px; font-weight: 600; font-family: 'Space Grotesk', sans-serif; cursor: pointer; text-decoration: none; display: inline-block; transition: background .2s, transform .15s; }
+    .btn-primary:hover { background: var(--accent-hi); transform: scale(1.03); }
+    .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border-hi); padding: 14px 34px; border-radius: 99px; font-size: 15px; cursor: pointer; text-decoration: none; display: inline-block; transition: border-color .2s, color .2s; }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ===== FOOTER ===== */
+    footer { background: var(--bg); border-top: 1px solid var(--border); padding: 2.5rem 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; }
+    .foot-logo { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; color: var(--text); text-decoration: none; }
+    .foot-sub { font-size: 12px; color: var(--muted-2); margin-top: 3px; }
+    .foot-sub a { color: var(--muted); text-decoration: none; } .foot-sub a:hover { color: var(--accent); }
+    .foot-links { display: flex; gap: 1.5rem; }
+    .foot-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color .2s; }
+    .foot-links a:hover { color: var(--accent); }
+    .foot-right { font-size: 12px; color: var(--muted-2); }
+
+    /* ===== BREW OVERLAY (shared) ===== */
+    @keyframes sp-tw { 0%,100%{opacity:1} 50%{opacity:.15} }
+    @keyframes bub-r { 0%{transform:translateY(0);opacity:0} 12%{opacity:.72} 85%{opacity:.35} 100%{transform:translateY(-17px);opacity:0} }
+    @keyframes liq-s { 0%,100%{opacity:.18} 50%{opacity:.38} }
+    @keyframes nn-g { 0%,100%{opacity:.4} 50%{opacity:.85} }
+    .fs1{animation:sp-tw 2.1s 0s ease-in-out infinite} .fs2{animation:sp-tw 2.7s .45s ease-in-out infinite}
+    .fs3{animation:sp-tw 1.85s .9s ease-in-out infinite} .fs4{animation:sp-tw 2.45s 1.2s ease-in-out infinite}
+    .fs5{animation:sp-tw 3.0s .65s ease-in-out infinite} .fs6{animation:sp-tw 2.2s 1.5s ease-in-out infinite}
+    .fb1{animation:bub-r 2.9s 0s ease-in-out infinite} .fb2{animation:bub-r 2.9s .97s ease-in-out infinite} .fb3{animation:bub-r 2.9s 1.94s ease-in-out infinite}
+    .flq{animation:liq-s 2.6s ease-in-out infinite} .fnn{animation:nn-g 2.0s .3s ease-in-out infinite}
+    #brew-overlay { position: fixed; inset: 0; background: #060606; z-index: 500; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1.75rem; }
+    #brew-overlay.visible { display: flex; }
+    .brew-label { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 500; color: var(--text); text-align: center; transition: opacity .3s; }
+    .brew-sub-txt { font-size: 13px; color: var(--muted); text-align: center; margin-top: -.875rem; transition: opacity .3s; }
+    .brew-dots { display: flex; gap: 7px; }
+    .brew-dot-b { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: br-b 1.3s infinite ease-in-out; }
+    .brew-dot-b:nth-child(2) { animation-delay: .22s; } .brew-dot-b:nth-child(3) { animation-delay: .44s; }
+    @keyframes br-b { 0%,80%,100%{transform:translateY(0);opacity:.35} 40%{transform:translateY(-9px);opacity:1} }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 900px) {
+      .calc-shell { grid-template-columns: 1fr; }
+      .calc-result { position: static; }
+      .calc-tiers { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      nav { padding: .875rem 1.25rem; }
+      .nav-links { display: none; flex-direction: column; }
+      .nav-toggle { display: flex; }
+      .nav-links.open { display: flex; position: fixed; top: 60px; left: 0; right: 0; background: rgba(6,6,6,0.96); backdrop-filter: blur(14px); padding: 1.5rem 1.25rem; border-bottom: 1px solid var(--border); gap: 1.25rem; }
+      .hp-steps { grid-template-columns: 1fr; gap: 2rem; }
+      .hp-arrow { display: none; }
+      footer { flex-direction: column; align-items: flex-start; }
+      .foot-links { flex-wrap: wrap; }
+    }
+    @media (max-width: 480px) {
+      section { padding: 4rem 1.25rem; }
+      .calc-tiers { grid-template-columns: 1fr 1fr; }
+      .calc-panel, .calc-result { padding: 1.25rem; }
+    }
+  </style>
+</head>
+
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<div id="brew-overlay" role="status" aria-live="polite">
+  <svg width="108" viewBox="0 0 165 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path class="flq" d="M37,100 L127,100 L142,122 L22,122 Z" fill="#f0a500"/>
+    <path d="M70,28 L94,28 L94,52 L142,122 L22,122 L70,52 Z" stroke="#f0a500" stroke-width="3" stroke-linejoin="round" fill="none"/>
+    <line x1="65" y1="28" x2="99" y2="28" stroke="#f0a500" stroke-width="3" stroke-linecap="round"/>
+    <line x1="37" y1="100" x2="127" y2="100" stroke="#f0a500" stroke-width="1.5" stroke-linecap="round" opacity=".45"/>
+    <circle class="fb1" cx="70" cy="116" r="3" fill="#f0a500"/>
+    <circle class="fb2" cx="92" cy="119" r="2.4" fill="#f0a500"/>
+    <circle class="fb3" cx="81" cy="112" r="2" fill="#f0a500"/>
+    <line class="fnn" x1="72" y1="65" x2="92" y2="60" stroke="#f0a500" stroke-width="1" opacity=".5"/>
+    <line class="fnn" x1="72" y1="65" x2="82" y2="82" stroke="#f0a500" stroke-width="1" opacity=".5"/>
+    <line class="fnn" x1="92" y1="60" x2="82" y2="82" stroke="#f0a500" stroke-width="1" opacity=".5"/>
+    <line class="fnn" x1="82" y1="82" x2="100" y2="88" stroke="#f0a500" stroke-width="1" opacity=".5"/>
+    <circle cx="72" cy="65" r="3.5" fill="#f0a500"/><circle cx="92" cy="60" r="3" fill="#f0a500"/>
+    <circle cx="82" cy="82" r="4" fill="#f0a500"/><circle cx="100" cy="88" r="2.5" fill="#f0a500"/><circle cx="68" cy="94" r="2.5" fill="#f0a500"/>
+    <path class="fs1" d="M135,26 L137.6,35.4 L147,38 L137.6,40.6 L135,50 L132.4,40.6 L123,38 L132.4,35.4 Z" fill="#f0a500"/>
+    <path class="fs2" d="M28,46 L30,53 L37,55 L30,57 L28,64 L26,57 L19,55 L26,53 Z" fill="#f0a500"/>
+    <path class="fs3" d="M150,75 L151.5,80.5 L157,82 L151.5,83.5 L150,89 L148.5,83.5 L143,82 L148.5,80.5 Z" fill="#f0a500"/>
+    <path class="fs4" d="M50,16 L51.3,20.7 L56,22 L51.3,23.3 L50,28 L48.7,23.3 L44,22 L48.7,20.7 Z" fill="#f0a500"/>
+    <path class="fs5" d="M112,13 L113.1,16.9 L117,18 L113.1,19.1 L112,23 L110.9,19.1 L107,18 L110.9,16.9 Z" fill="#f0a500"/>
+    <path class="fs6" d="M22,98 L23.1,101.9 L27,103 L23.1,104.1 L22,108 L20.9,104.1 L17,103 L20.9,101.9 Z" fill="#f0a500" opacity=".7"/>
+    <circle cx="105" cy="13" r="2.5" fill="#f0a500" opacity=".8"/><circle cx="153" cy="60" r="2" fill="#f0a500" opacity=".6"/><circle cx="14" cy="72" r="1.5" fill="#f0a500" opacity=".5"/>
+  </svg>
+  <div class="brew-label" id="brew-label">Brewing your quote...</div>
+  <div class="brew-sub-txt" id="brew-sub">Calculating your custom build</div>
+  <div class="brew-dots"><div class="brew-dot-b"></div><div class="brew-dot-b"></div><div class="brew-dot-b"></div></div>
+</div>
+
+<nav id="main-nav">
+  <a href="index.html" class="nav-logo">
+    <svg width="34" height="34" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+      <rect x="0" y="0" width="100" height="100" rx="20" fill="#f0a500"/>
+      <path d="M42,18 L58,18 L58,32 L82,82 L18,82 L42,32 Z" stroke="#0a0603" stroke-width="5" stroke-linejoin="round" fill="rgba(10,6,3,0.18)"/>
+      <line x1="38" y1="18" x2="62" y2="18" stroke="#0a0603" stroke-width="5" stroke-linecap="round"/>
+      <path class="fs1" d="M80,20 L81.3,24.7 L86,26 L81.3,27.3 L80,32 L78.7,27.3 L74,26 L78.7,24.7 Z" fill="#0a0603" opacity=".85"/>
+      <circle cx="48" cy="42" r="2.5" fill="#0a0603" opacity=".8"/><circle cx="57" cy="39" r="2" fill="#0a0603" opacity=".8"/><circle cx="53" cy="52" r="3" fill="#0a0603" opacity=".8"/>
+      <line class="fnn" x1="48" y1="42" x2="57" y2="39" stroke="#0a0603" stroke-width=".9" opacity=".4"/>
+      <line class="fnn" x1="48" y1="42" x2="53" y2="52" stroke="#0a0603" stroke-width=".9" opacity=".4"/>
+      <line class="fnn" x1="57" y1="39" x2="53" y2="52" stroke="#0a0603" stroke-width=".9" opacity=".4"/>
+    </svg>
+    <div class="nav-logo-info">
+      <div class="nav-logo-name">Jain Labs</div>
+      <div class="nav-logo-sub">Services & Pricing</div>
+    </div>
+  </a>
+
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#categories">Services</a></li>
+    <li><a href="#calculator">Build a quote</a></li>
+    <li><a href="#compare">Compare plans</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="index.html">← Home</a></li>
+    <li><a href="#final-cta" class="nav-cta">Start a project</a></li>
+  </ul>
+
+  <button class="nav-toggle" id="nav-toggle" aria-label="Menu">☰</button>
+</nav>
+
+<main>
+
+  <!-- ===== PAGE HERO ===== -->
+  <section id="phero">
+    <div class="phero-badge"><div class="badge-dot"></div>Services & pricing</div>
+    <h1 class="phero-title">Build your <span class="accent">quote</span> in real time.</h1>
+    <p class="phero-sub">Pick a tier, add what you need, watch the price brew right in front of you. No back-and-forth quotes, no surprises.</p>
+    <a href="#calculator" class="btn-primary" style="margin-top:2rem; opacity:0; animation: fadeUp 0.9s 0.65s forwards">Build your price ↓</a>
+  </section>
+
+  <!-- ===== SERVICE CATEGORIES ===== -->
+  <section id="categories">
+    <div class="max-w">
+      <div class="reveal" style="margin-bottom:3rem">
+        <div class="sec-label">What we build</div>
+        <h2 class="sec-title">Six shapes. One process.</h2>
+        <p class="sec-sub">Every problem fits somewhere here — and if it doesn't, that's its own category too.</p>
+      </div>
+
+      <div class="cat-grid reveal">
+        <div class="cat-card">
+          <div class="cat-icon">📊</div>
+          <div class="cat-name">Trackers & logs</div>
+          <div class="cat-desc">Daily, weekly, or monthly logging with visual summaries — built for things you need to monitor over time.</div>
+          <div class="cat-examples"><span class="cat-ex">Expenses</span><span class="cat-ex">Health</span><span class="cat-ex">Habits</span></div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-icon">📈</div>
+          <div class="cat-name">Dashboards & reports</div>
+          <div class="cat-desc">Live numbers in one view — sales, performance, inventory — so you stop digging through spreadsheets.</div>
+          <div class="cat-examples"><span class="cat-ex">Sales</span><span class="cat-ex">Inventory</span><span class="cat-ex">Analytics</span></div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-icon">🔐</div>
+          <div class="cat-name">Portals & records</div>
+          <div class="cat-desc">Private, structured places to store and retrieve information — yours alone, never shared with third parties.</div>
+          <div class="cat-examples"><span class="cat-ex">Client records</span><span class="cat-ex">Bank logs</span><span class="cat-ex">Documents</span></div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-icon">🗓️</div>
+          <div class="cat-name">Planners & schedulers</div>
+          <div class="cat-desc">Deadlines, timetables, and calendars that keep you ahead of what's coming instead of reacting to it.</div>
+          <div class="cat-examples"><span class="cat-ex">Study plans</span><span class="cat-ex">Projects</span><span class="cat-ex">Content calendars</span></div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-icon">⚙️</div>
+          <div class="cat-name">Workflow tools</div>
+          <div class="cat-desc">Internal tools that replace manual steps — assign, approve, track — built around how your team actually works.</div>
+          <div class="cat-examples"><span class="cat-ex">Task boards</span><span class="cat-ex">Approvals</span><span class="cat-ex">Automation</span></div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-icon">✨</div>
+          <div class="cat-name">Something else entirely</div>
+          <div class="cat-desc">Didn't see your problem above? That's normal — most of what we build doesn't fit a category until you describe it.</div>
+          <div class="cat-examples"><span class="cat-ex">You name it</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOW PRICING WORKS ===== -->
+  <section id="how-pricing">
+    <div class="max-w">
+      <div class="reveal" style="text-align:center; max-width:480px; margin:0 auto 3.5rem">
+        <div class="sec-label">How pricing works</div>
+        <h2 class="sec-title">Three real steps, in order.</h2>
+      </div>
+      <div class="hp-steps reveal">
+        <div class="hp-step">
+          <div class="hp-num">1</div>
+          <div class="hp-step-title">Pick your tier</div>
+          <div class="hp-step-desc">Based on who you are and how complex your problem is — this sets your base price.</div>
+        </div>
+        <div class="hp-arrow">→</div>
+        <div class="hp-step">
+          <div class="hp-num">2</div>
+          <div class="hp-step-title">Add what you need</div>
+          <div class="hp-step-desc">Branding, multi-user access, integrations — toggle on only what's actually useful to you.</div>
+        </div>
+        <div class="hp-arrow">→</div>
+        <div class="hp-step">
+          <div class="hp-num">3</div>
+          <div class="hp-step-title">Get your price</div>
+          <div class="hp-step-desc">One number, no hidden fees. Send it to us and we start scoping your build the same day.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CALCULATOR ===== -->
+  <section id="calculator">
+    <div class="max-w">
+      <div class="reveal" style="margin-bottom:2.5rem">
+        <div class="sec-label">Build your quote</div>
+        <h2 class="sec-title">Watch it brew.</h2>
+        <p class="sec-sub">Pick a tier and add features — the price (and the flask) update live.</p>
+      </div>
+
+      <div class="calc-shell reveal">
+
+        <!-- LEFT: inputs -->
+        <div class="calc-panel">
+
+          <div class="calc-block">
+            <div class="calc-label">
+              <span>Currency</span>
+              <div class="calc-toggle">
+                <button class="calc-tog-btn on" id="cur-in" onclick="setCurrency('in')">🇮🇳 INR</button>
+                <button class="calc-tog-btn" id="cur-gl" onclick="setCurrency('gl')">🌐 USD</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="calc-block">
+            <div class="calc-label">1. Choose your tier</div>
+            <div class="calc-tiers" id="calc-tiers">
+              <div class="calc-tier" data-in="1999" data-us="29" data-student="true" onclick="selectTier(this)">
+                <div class="calc-tier-name">Student</div>
+                <div class="calc-tier-price">₹1,999</div>
+                <div class="calc-tier-flag">🪪 ID required</div>
+              </div>
+              <div class="calc-tier" data-in="2999" data-us="49" onclick="selectTier(this)">
+                <div class="calc-tier-name">Family</div>
+                <div class="calc-tier-price">₹2,999</div>
+              </div>
+              <div class="calc-tier sel" data-in="4999" data-us="79" onclick="selectTier(this)">
+                <div class="calc-tier-name">Freelancer</div>
+                <div class="calc-tier-price">₹4,999</div>
+              </div>
+              <div class="calc-tier" data-in="7499" data-us="129" onclick="selectTier(this)">
+                <div class="calc-tier-name">Business</div>
+                <div class="calc-tier-price">₹7,499</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="calc-block">
+            <div class="calc-label">2. Add features</div>
+            <div class="calc-feats" id="calc-feats">
+              <div class="calc-feat" data-in="999" data-us="15" onclick="toggleFeat(this)">
+                <div class="calc-feat-box"></div>
+                <div class="calc-feat-info">
+                  <div class="calc-feat-name">Custom branding</div>
+                  <div class="calc-feat-desc">Your colours, your logo, woven through the whole site</div>
+                </div>
+                <div class="calc-feat-price">+₹999</div>
+              </div>
+              <div class="calc-feat" data-in="1499" data-us="25" onclick="toggleFeat(this)">
+                <div class="calc-feat-box"></div>
+                <div class="calc-feat-info">
+                  <div class="calc-feat-name">Multi-user access</div>
+                  <div class="calc-feat-desc">Multiple people can log in with their own view</div>
+                </div>
+                <div class="calc-feat-price">+₹1,499</div>
+              </div>
+              <div class="calc-feat" data-in="699" data-us="12" onclick="toggleFeat(this)">
+                <div class="calc-feat-box"></div>
+                <div class="calc-feat-info">
+                  <div class="calc-feat-name">Export reports</div>
+                  <div class="calc-feat-desc">Download your data as CSV or PDF anytime</div>
+                </div>
+                <div class="calc-feat-price">+₹699</div>
+              </div>
+              <div class="calc-feat" data-in="1999" data-us="30" onclick="toggleFeat(this)">
+                <div class="calc-feat-box"></div>
+                <div class="calc-feat-info">
+                  <div class="calc-feat-name">Integrations</div>
+                  <div class="calc-feat-desc">Connect payments, calendars, or other tools you use</div>
+                </div>
+                <div class="calc-feat-price">+₹1,999</div>
+              </div>
+              <div class="calc-feat" data-in="1499" data-us="25" onclick="toggleFeat(this)">
+                <div class="calc-feat-box"></div>
+                <div class="calc-feat-info">
+                  <div class="calc-feat-name">Priority delivery</div>
+                  <div class="calc-feat-desc">Move to the front of the queue — ready in 48 hours</div>
+                </div>
+                <div class="calc-feat-price">+₹1,499</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT: live result -->
+        <div class="calc-result">
+          <div class="calc-flask-row">
+            <div class="flask-fill-shell">
+              <svg width="56" height="64" viewBox="0 0 56 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="position:absolute;inset:0">
+                <path d="M22,8 L34,8 L34,20 L48,52 L8,52 L22,20 Z" stroke="#f0a500" stroke-width="2" stroke-linejoin="round" fill="none"/>
+                <line x1="20" y1="8" x2="36" y2="8" stroke="#f0a500" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <div style="position:absolute; left:9px; right:9px; bottom:7px; top:21px; overflow:hidden; clip-path:polygon(38% 0%, 62% 0%, 100% 100%, 0% 100%)">
+                <div class="flask-liquid" id="flask-liquid"></div>
+              </div>
+            </div>
+            <div>
+              <div class="calc-total-label">Estimated price</div>
+              <div class="calc-total-num" id="calc-total">₹4,999</div>
+            </div>
+          </div>
+
+          <ul class="calc-summary" id="calc-summary">
+            <li><span class="nm">Freelancer</span><span>base</span></li>
+          </ul>
+
+          <div class="calc-verify" id="calc-verify" style="display:none">
+            <label class="calc-verify-label">
+              <input type="checkbox" id="calc-verify-check" onchange="updateCtaState()">
+              <span>I can provide a valid student ID (college ID, enrollment letter, or .edu email) before work begins.</span>
+            </label>
+            <div class="calc-verify-hint">Student pricing is verified during onboarding — this keeps it fair and available for actual students.</div>
+          </div>
+
+          <a href="#" class="calc-cta" id="calc-cta-btn" onclick="sendQuote(event)">Send this quote to us →</a>
+          <p class="calc-note">Opens WhatsApp with your selections pre-filled. No payment yet — this just starts the conversation.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== COMPARISON TABLE ===== -->
+  <section id="compare">
+    <div class="max-w">
+      <div class="reveal" style="margin-bottom:2.5rem">
+        <div class="sec-label">Compare plans</div>
+        <h2 class="sec-title">What's typically included.</h2>
+        <p class="sec-sub">A quick reference — the calculator above always reflects your exact build.</p>
+      </div>
+
+      <div class="cmp-wrap reveal">
+        <table class="cmp-table">
+          <thead>
+            <tr>
+              <th>Included</th>
+              <th class="tier-h">Student</th>
+              <th class="tier-h">Family</th>
+              <th class="tier-h">Freelancer</th>
+              <th class="tier-h">Business</th>
+              <th class="tier-h">Enterprise</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Core features</td><td>1</td><td>Up to 3</td><td>Up to 5</td><td>Unlimited</td><td>Unlimited</td></tr>
+            <tr><td>Mobile-friendly</td><td class="cmp-yes">✓</td><td class="cmp-yes">✓</td><td class="cmp-yes">✓</td><td class="cmp-yes">✓</td><td class="cmp-yes">✓</td></tr>
+            <tr><td>Custom branding</td><td class="cmp-no">—</td><td class="cmp-no">—</td><td class="cmp-yes">✓</td><td class="cmp-yes">✓</td><td class="cmp-yes">✓</td></tr>
+            <tr><td>Multi-user access</td><td class="cmp-no">—</td><td class="cmp-no">—</td><td class="cmp-no">—</td><td class="cmp-yes">✓</td><td class="cmp-yes">✓</td></tr>
+            <tr><td>Integrations & API</td><td class="cmp-no">—</td><td class="cmp-no">—</td><td class="cmp-no">Optional</td><td class="cmp-yes">✓</td><td class="cmp-yes">✓</td></tr>
+            <tr><td>Bug-fix support</td><td>7 days</td><td>7 days</td><td>14 days</td><td>30 days</td><td>Dedicated</td></tr>
+            <tr><td>Delivery time</td><td>3–4 days</td><td>3–5 days</td><td>4–6 days</td><td>5–7 days</td><td>Scoped together</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section id="faq">
+    <div class="max-w">
+      <div class="reveal" style="text-align:center; max-width:480px; margin:0 auto 2.5rem">
+        <div class="sec-label">Questions</div>
+        <h2 class="sec-title">Before you reach out.</h2>
+      </div>
+
+      <div class="faq-list reveal">
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            <span class="faq-q-text">Do I actually own the website once it's built?</span>
+            <span class="faq-chevron">▾</span>
+          </div>
+          <div class="faq-a-wrap"><div class="faq-a">Yes, completely. Once final payment is made, the website and everything in it is yours — hosting, code, and data. We don't lock you into a platform or hold anything hostage behind a subscription.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            <span class="faq-q-text">How long does delivery actually take?</span>
+            <span class="faq-chevron">▾</span>
+          </div>
+          <div class="faq-a-wrap"><div class="faq-a">Most builds take 3–7 days depending on tier and features. You'll get a live preview link partway through to give feedback before final delivery — not a single big reveal at the end.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            <span class="faq-q-text">What if I need changes after it's delivered?</span>
+            <span class="faq-chevron">▾</span>
+          </div>
+          <div class="faq-a-wrap"><div class="faq-a">Every tier includes a bug-fix support window after delivery (7–30 days depending on tier). For ongoing changes beyond that, we offer optional monthly maintenance — entirely your choice, never forced.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            <span class="faq-q-text">Is my data private and secure?</span>
+            <span class="faq-chevron">▾</span>
+          </div>
+          <div class="faq-a-wrap"><div class="faq-a">Yes. Your website and its data belong to you alone — we don't share, sell, or use your information for anything beyond building what you asked for.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            <span class="faq-q-text">How do payments work for India vs international clients?</span>
+            <span class="faq-chevron">▾</span>
+          </div>
+          <div class="faq-a-wrap"><div class="faq-a">Indian clients pay via UPI or card through Razorpay. International clients pay via Stripe or Wise in USD. Both follow the same structure — 50% advance to start, 50% on delivery.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            <span class="faq-q-text">What if my problem doesn't match any category?</span>
+            <span class="faq-chevron">▾</span>
+          </div>
+          <div class="faq-a-wrap"><div class="faq-a">That's most of what we actually build. The categories above are starting points, not limits — describe your problem and we'll tell you honestly whether (and how) we can solve it.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FINAL CTA ===== -->
+  <section id="final-cta">
+    <h2 class="final-title reveal">Ready to <span class="accent">brew</span> yours?</h2>
+    <p class="final-sub reveal">Use the calculator above, or just tell us what's hard in your life right now.</p>
+    <div class="final-btns reveal">
+      <a href="https://wa.me/919909664569?text=Hi%2C%20I%27d%20like%20to%20discuss%20a%20project%20with%20Jain%20Labs" class="btn-primary" target="_blank">WhatsApp us</a>
+      <a href="mailto:hello@jainstudio.in" class="btn-ghost">Send an email</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div>
+    <a href="index.html" class="foot-logo">Jain Labs</a>
+    <div class="foot-sub">Part of <a href="https://www.jainstudio.in" target="_blank">Jain Studio</a> &nbsp;·&nbsp; Also visit <a href="https://www.jainstudio.in/graphics/jain-designs.html" target="_blank">Jain Designs</a></div>
+  </div>
+  <div class="foot-links">
+    <a href="index.html">Home</a>
+    <a href="#categories">Services</a>
+    <a href="#calculator">Pricing</a>
+    <a href="https://www.jainstudio.in" target="_blank">Jain Studio</a>
+  </div>
+  <div class="foot-right">© <span id="foot-year"></span> Jain Studio. All rights reserved.</div>
+</footer>
+
+<script>
+/* =============================================
+   THREE.JS — FLOATING BACKGROUND (shared)
+   ============================================= */
+(function () {
+  const canvas = document.getElementById('bg-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.z = 6;
+  const isMobile = window.innerWidth < 768;
+
+  const COUNT = isMobile ? 60 : 160;
+  const pos = new Float32Array(COUNT * 3);
+  for (let i = 0; i < COUNT; i++) {
+    pos[i*3] = (Math.random()-0.5)*32; pos[i*3+1] = (Math.random()-0.5)*18; pos[i*3+2] = (Math.random()-0.5)*8-2;
+  }
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  scene.add(new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0xf0a500, size: 0.045, transparent: true, opacity: 0.4 })));
+
+  const shapes = [];
+  const shapeGeo = new THREE.IcosahedronGeometry(0.2, 0);
+  const SHAPE_COUNT = isMobile ? 5 : 13;
+  for (let i = 0; i < SHAPE_COUNT; i++) {
+    const mat = new THREE.MeshBasicMaterial({ color: 0xf0a500, wireframe: true, transparent: true, opacity: Math.random()*0.12+0.03 });
+    const mesh = new THREE.Mesh(shapeGeo, mat);
+    mesh.position.set((Math.random()-0.5)*28, (Math.random()-0.5)*14, (Math.random()-0.5)*6-3);
+    mesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+    const initY = mesh.position.y, floatPhase = Math.random()*Math.PI*2;
+    const rx = (Math.random()-0.5)*0.006, ry = (Math.random()-0.5)*0.006;
+    shapes.push({ mesh, initY, floatPhase, rx, ry });
+    scene.add(mesh);
+  }
+
+  let mx=0, my=0, tx=0, ty=0;
+  window.addEventListener('mousemove', e => { tx=(e.clientX/window.innerWidth-0.5)*1.6; ty=-(e.clientY/window.innerHeight-0.5)*0.9; });
+  window.addEventListener('touchmove', e => { if(!e.touches[0]) return; tx=(e.touches[0].clientX/window.innerWidth-0.5)*0.9; ty=-(e.touches[0].clientY/window.innerHeight-0.5)*0.5; }, { passive: true });
+  window.addEventListener('resize', () => { camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+
+  const clock = new THREE.Clock();
+  (function tick() {
+    requestAnimationFrame(tick);
+    const t = clock.getElapsedTime();
+    mx += (tx-mx)*0.04; my += (ty-my)*0.04;
+    shapes.forEach(({mesh, initY, floatPhase, rx, ry}) => { mesh.rotation.x+=rx; mesh.rotation.y+=ry; mesh.position.y = initY + Math.sin(t*0.35+floatPhase)*0.28; });
+    camera.position.x += (mx*0.55-camera.position.x)*0.04; camera.position.y += (my*0.35-camera.position.y)*0.04;
+    camera.lookAt(scene.position);
+    renderer.render(scene, camera);
+  })();
+})();
+
+/* =============================================
+   NAVIGATION
+   ============================================= */
+const mainNav = document.getElementById('main-nav');
+const navLinks = document.getElementById('nav-links');
+const navToggle = document.getElementById('nav-toggle');
+window.addEventListener('scroll', () => { mainNav.classList.toggle('scrolled', window.scrollY > 60); }, { passive: true });
+navToggle.addEventListener('click', () => { const open = navLinks.classList.toggle('open'); navToggle.textContent = open ? '✕' : '☰'; });
+navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { navLinks.classList.remove('open'); navToggle.textContent = '☰'; }));
+
+/* =============================================
+   SCROLL REVEAL
+   ============================================= */
+const revObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revObserver.observe(el));
+
+/* =============================================
+   FAQ ACCORDION
+   ============================================= */
+function toggleFaq(q) {
+  const item = q.closest('.faq-item');
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+
+/* =============================================
+   CALCULATOR
+   ============================================= */
+let currency = 'in';
+let selectedTier = document.querySelector('.calc-tier.sel');
+const featEls = Array.from(document.querySelectorAll('.calc-feat'));
+const liquidEl = document.getElementById('flask-liquid');
+const totalEl = document.getElementById('calc-total');
+const summaryEl = document.getElementById('calc-summary');
+
+const symbol = () => currency === 'in' ? '₹' : '$';
+const fmt = n => currency === 'in' ? n.toLocaleString('en-IN') : n.toLocaleString('en-US');
+const dataKey = () => currency === 'in' ? 'in' : 'us';
+
+function setCurrency(c) {
+  currency = c;
+  document.getElementById('cur-in').classList.toggle('on', c === 'in');
+  document.getElementById('cur-gl').classList.toggle('on', c === 'gl');
+  document.querySelectorAll('.calc-tier').forEach(t => {
+    t.querySelector('.calc-tier-price').textContent = symbol() + fmt(parseInt(t.dataset[dataKey()], 10));
+  });
+  document.querySelectorAll('.calc-feat').forEach(f => {
+    f.querySelector('.calc-feat-price').textContent = '+' + symbol() + fmt(parseInt(f.dataset[dataKey()], 10));
+  });
+  recalc();
+}
+
+function isStudentTier() { return selectedTier.dataset.student === 'true'; }
+
+function updateVerifyVisibility() {
+  const verifyBlock = document.getElementById('calc-verify');
+  verifyBlock.style.display = isStudentTier() ? 'block' : 'none';
+  updateCtaState();
+}
+
+function updateCtaState() {
+  const btn = document.getElementById('calc-cta-btn');
+  const checked = document.getElementById('calc-verify-check').checked;
+  const blocked = isStudentTier() && !checked;
+  btn.classList.toggle('disabled', blocked);
+  btn.textContent = blocked ? 'Confirm ID above to continue →' : 'Send this quote to us →';
+}
+
+function selectTier(el) {
+  document.querySelectorAll('.calc-tier').forEach(t => t.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedTier = el;
+  if (!isStudentTier()) document.getElementById('calc-verify-check').checked = false;
+  updateVerifyVisibility();
+  recalc();
+}
+
+function toggleFeat(el) {
+  el.classList.toggle('sel');
+  el.querySelector('.calc-feat-box').textContent = el.classList.contains('sel') ? '✓' : '';
+  recalc();
+}
+
+let lastTotal = parseInt(selectedTier.dataset[dataKey()], 10);
+
+function recalc() {
+  const key = dataKey();
+  const base = parseInt(selectedTier.dataset[key], 10);
+  let total = base;
+  const items = [{ nm: selectedTier.querySelector('.calc-tier-name').textContent, amt: base, isBase: true }];
+
+  featEls.forEach(f => {
+    if (f.classList.contains('sel')) {
+      const amt = parseInt(f.dataset[key], 10);
+      total += amt;
+      items.push({ nm: f.querySelector('.calc-feat-name').textContent, amt });
+    }
+  });
+
+  /* animated count-up */
+  const start = lastTotal, dur = 500, t0 = performance.now();
+  function step(now) {
+    const p = Math.min((now - t0) / dur, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    const val = Math.round(start + (total - start) * eased);
+    totalEl.textContent = symbol() + fmt(val);
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+  lastTotal = total;
+
+  /* flask fill — scaled against a generous max so it never looks "full" too early */
+  const maxPossible = 7499 + 999 + 1499 + 699 + 1999 + 1499; /* business + all features, INR scale */
+  const totalInINRScale = key === 'in' ? total : total * (4999/79); /* rough scale so USD fills consistently */
+  const pct = Math.min(96, Math.max(6, (totalInINRScale / maxPossible) * 100));
+  liquidEl.style.height = pct + '%';
+
+  /* summary list */
+  summaryEl.innerHTML = items.map(it =>
+    `<li><span class="nm">${it.nm}</span><span>${it.isBase ? 'base' : '+' + symbol() + fmt(it.amt)}</span></li>`
+  ).join('');
+}
+
+function sendQuote(e) {
+  e.preventDefault();
+
+  if (isStudentTier() && !document.getElementById('calc-verify-check').checked) {
+    const verifyBlock = document.getElementById('calc-verify');
+    verifyBlock.style.animation = 'none';
+    void verifyBlock.offsetWidth;
+    verifyBlock.style.animation = 'shake-x .4s';
+    return;
+  }
+
+  const key = dataKey();
+  const tierName = selectedTier.querySelector('.calc-tier-name').textContent;
+  const chosenFeats = featEls.filter(f => f.classList.contains('sel')).map(f => f.querySelector('.calc-feat-name').textContent);
+  const totalText = totalEl.textContent;
+
+  const overlay = document.getElementById('brew-overlay');
+  const labelEl = document.getElementById('brew-label');
+  const subEl = document.getElementById('brew-sub');
+  const steps = [
+    ['Brewing your quote...', 'Adding up your selections'],
+    ['Packaging it up...', 'Getting it ready to send'],
+  ];
+  let step = 0;
+  labelEl.textContent = steps[0][0]; subEl.textContent = steps[0][1];
+  overlay.classList.add('visible');
+
+  const stepTimer = setInterval(() => {
+    step++;
+    if (step < steps.length) {
+      labelEl.style.opacity = '0'; subEl.style.opacity = '0';
+      setTimeout(() => { labelEl.textContent = steps[step][0]; subEl.textContent = steps[step][1]; labelEl.style.opacity = '1'; subEl.style.opacity = '1'; }, 280);
+    }
+  }, 750);
+
+  setTimeout(() => {
+    clearInterval(stepTimer);
+    overlay.classList.remove('visible');
+
+    let msg = `Hi, I'd like a quote for a ${tierName} build on Jain Labs.`;
+    if (chosenFeats.length) msg += `\n\nFeatures: ${chosenFeats.join(', ')}.`;
+    msg += `\n\nEstimated total: ${totalText}`;
+    if (isStudentTier()) msg += `\n\nI confirm I can share a valid student ID during onboarding.`;
+    window.open('https://wa.me/919909664569?text=' + encodeURIComponent(msg), '_blank');
+  }, 1700);
+}
+
+/* init */
+updateVerifyVisibility();
+recalc();
+
+/* =============================================
+   FOOTER YEAR
+   ============================================= */
+document.getElementById('foot-year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
