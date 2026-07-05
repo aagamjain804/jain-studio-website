@@ -834,12 +834,25 @@ function sendQuote(e) {
   const chosenFeats = featEls.filter(f => f.classList.contains('sel')).map(f => f.querySelector('.calc-feat-name').textContent);
   const totalText = totalEl.textContent;
 
+  let msg = `Hi, I'd like a quote for a ${tierName} build on Jain Labs.`;
+  if (chosenFeats.length) msg += `\n\nFeatures: ${chosenFeats.join(', ')}.`;
+  msg += `\n\nEstimated total: ${totalText}`;
+  if (isStudentTier()) msg += `\n\nI confirm I can share a valid student ID during onboarding.`;
+
+  const a = document.createElement('a');
+  a.href = 'https://wa.me/919909664569?text=' + encodeURIComponent(msg);
+  a.target = '_blank';
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
   const overlay = document.getElementById('brew-overlay');
   const labelEl = document.getElementById('brew-label');
-  const subEl = document.getElementById('brew-sub');
+  const subEl   = document.getElementById('brew-sub');
   const steps = [
-    ['Brewing your quote...', 'Adding up your selections'],
-    ['Packaging it up...', 'Getting it ready to send'],
+    ['Sending your quote...', 'Opening WhatsApp'],
+    ['Done!', 'Your quote is on its way'],
   ];
   let step = 0;
   labelEl.textContent = steps[0][0]; subEl.textContent = steps[0][1];
@@ -849,22 +862,20 @@ function sendQuote(e) {
     step++;
     if (step < steps.length) {
       labelEl.style.opacity = '0'; subEl.style.opacity = '0';
-      setTimeout(() => { labelEl.textContent = steps[step][0]; subEl.textContent = steps[step][1]; labelEl.style.opacity = '1'; subEl.style.opacity = '1'; }, 280);
+      setTimeout(() => {
+        labelEl.textContent = steps[step][0];
+        subEl.textContent   = steps[step][1];
+        labelEl.style.opacity = '1';
+        subEl.style.opacity   = '1';
+      }, 280);
     }
   }, 750);
 
   setTimeout(() => {
     clearInterval(stepTimer);
     overlay.classList.remove('visible');
-
-    let msg = `Hi, I'd like a quote for a ${tierName} build on Jain Labs.`;
-    if (chosenFeats.length) msg += `\n\nFeatures: ${chosenFeats.join(', ')}.`;
-    msg += `\n\nEstimated total: ${totalText}`;
-    if (isStudentTier()) msg += `\n\nI confirm I can share a valid student ID during onboarding.`;
-    window.open('https://wa.me/919909664569?text=' + encodeURIComponent(msg), '_blank');
-  }, 1700);
+  }, 1600);
 }
-
 /* init */
 updateVerifyVisibility();
 recalc();
