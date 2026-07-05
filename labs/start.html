@@ -1050,16 +1050,22 @@ function buildFinalMsg() {
   return msg;
 }
 
+function openLink(url, target) {
+  const a = document.createElement('a');
+  a.href = url; a.target = target || '_blank'; a.rel = 'noopener';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
 function sendFinalWA(e){
   e.preventDefault();
-  window.open('https://wa.me/919909664569?text='+encodeURIComponent(buildFinalMsg()),'_blank');
+  openLink('https://wa.me/919909664569?text='+encodeURIComponent(buildFinalMsg()), '_blank');
 }
 
 function sendFinalEmail(e){
   e.preventDefault();
-  const subject = encodeURIComponent("Jain Labs Project Confirmation — "+_quote.name);
+  const subject = encodeURIComponent('Jain Labs Project Confirmation — '+_quote.name);
   const body    = encodeURIComponent(buildFinalMsg());
-  window.open('mailto:hello@jainstudio.in?subject='+subject+'&body='+body);
+  openLink('mailto:hello@jainstudio.in?subject='+subject+'&body='+body, '_self');
 }
 
 /* ═══ STEP NAVIGATION ═══ */
